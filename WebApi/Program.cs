@@ -17,6 +17,9 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IStatusTypeRepository, StatusTypeRepository>();
 builder.Services.AddScoped<IStatusTypeService, StatusTypeService>();
 
+builder.Services.AddScoped<ICustomerTypeRepository, CustomerTypeRepository>();
+builder.Services.AddScoped<ICustomerTypeService, CustomerTypeService>();
+
 
 
 builder.Services.AddMemoryCache();
