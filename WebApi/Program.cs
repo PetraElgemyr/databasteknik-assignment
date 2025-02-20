@@ -20,6 +20,13 @@ builder.Services.AddScoped<IStatusTypeService, StatusTypeService>();
 builder.Services.AddScoped<ICustomerTypeRepository, CustomerTypeRepository>();
 builder.Services.AddScoped<ICustomerTypeService, CustomerTypeService>();
 
+builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+builder.Services.AddScoped<IRoleService, RoleService>();
+
+
+builder.Services.AddScoped<IPostalCodeRepository, PostalCodeRepository>();
+builder.Services.AddScoped<IPostalCodeService, PostalCodeService>();
+
 
 
 builder.Services.AddMemoryCache();
