@@ -8,7 +8,13 @@ namespace Data.Repositories;
 
 public class UserRepository(DataContext context) : BaseRepository<UserEntity>(context), IUserRepository
 {
-    public override async Task<IEnumerable<UserEntity>> GetAllAsync()
+    //public override async Task<IEnumerable<UserEntity>> GetAllAsync()
+    //{
+    //    var entities = await _context.Users.ToListAsync();
+    //    return entities;
+    //}
+
+    public async Task<IEnumerable<UserEntity>> GetAllListUsersAsync()
     {
         // För att visa users i en överskådlig lista för admin (get alla users och visa basic info)
         // Hämta firstname, lastname, customername, role
@@ -32,7 +38,6 @@ public class UserRepository(DataContext context) : BaseRepository<UserEntity>(co
             }).ToListAsync();
 
         return entities;
-
     }
 
 

@@ -64,4 +64,19 @@ public class ResponseResult<T> : ResponseResult
         StatusCode = 404,
         Message = message,
     };
+
+    public static ResponseResult<T> BadRequest(string? message = default) => new()
+    {
+        Success = false,
+        StatusCode = 400,
+        Message = message,
+    };
+    public static ResponseResult<T> Error(string? message = default) => new()
+    {
+        Success = false,
+        StatusCode = 500,
+        Message = message,
+    };
+
+
 }
