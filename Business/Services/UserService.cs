@@ -32,7 +32,7 @@ public class UserService(IUserRepository userRepository, IRoleRepository roleRep
 
     public async Task<IEnumerable<ProjectManager>> GetAllProjectManagersAsync()
     {
-       
+
         const string cacheKey = "ProjectManagers";
         if (!_cache.TryGetValue(cacheKey, out IEnumerable<ProjectManager>? projectManagers))
         {
@@ -92,5 +92,48 @@ public class UserService(IUserRepository userRepository, IRoleRepository roleRep
         }
 
         return ResponseResult<UserUpdateForm?>.Created("User was successfully updated!", form);
+    }
+
+
+    public async Task<ResponseResult> DeleteUserAsync(UserUpdateForm form)
+    {
+
+        var role = await _roleRepository.GetAsync(r => r.Id == form.RoleId);
+        var entity = UserFactory.CreateUserEntityFromUpdateForm(form);
+
+        if (entity == null)
+        {
+            return ResponseResult.InvalidModel("The provided user to delete is invalid");
+        }
+        if (role == null)
+        {
+            return ResponseResult<UserUpdateForm>.NotFound("Role was not found");
+        }
+
+        var deletedResult = await _userRepository.RemoveAsync(entity);
+        if (!deletedResult)
+        {
+            return ResponseResult.Failed("Something went wrong when updating the user.");
+        }
+
+        return ResponseResult.NoContentSuccess();
+    }
+
+    public async Task<ResponseResult> DeleteUserByIdAsync(int id)
+    {
+
+        var entity = await _userRepository.GetAsync(x => x.Id == id);
+        if (entity == null)
+        {
+            return ResponseResult.InvalidModel("The provided userId is invalid");
+        }
+
+        var deletedResult = await _userRepository.RemoveAsync(entity);
+        if (!deletedResult)
+        {
+            return ResponseResult.Failed("Something went wrong when updating the user.");
+        }
+
+        return ResponseResult.NoContentSuccess();
     }
 }

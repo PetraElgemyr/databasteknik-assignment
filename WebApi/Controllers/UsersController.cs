@@ -68,4 +68,41 @@ public class UsersController(IUserService userService) : ControllerBase
             _ => Problem(result.Message),
         };
     }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteUserById(int id)
+    {
+        var result = await _userService.DeleteUserByIdAsync(id);
+
+        return result.StatusCode switch
+        {
+
+            204 => NoContent(), // lyckad borttaning kod 204, ist för 200
+            400 => BadRequest(result.Message),
+            404 => NotFound(result.Message),
+            _ => Problem(result.Message),
+        };
+    }
+
+
+    [HttpDelete]
+    public async Task<IActionResult> DeleteUser(UserUpdateForm form)
+    {
+
+        if (!ModelState.IsValid)
+        {
+            return BadRequest();
+        }
+        var result = await _userService.DeleteUserAsync(form);
+
+        return result.StatusCode switch
+        {
+
+            204 => NoContent(), // lyckad borttaning kod 204, ist för 200
+            400 => BadRequest(result.Message),
+            404 => NotFound(result.Message),
+            _ => Problem(result.Message),
+        };
+    }
+
 }

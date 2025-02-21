@@ -66,6 +66,7 @@ public class UserRepository(DataContext context) : BaseRepository<UserEntity>(co
                 Email = x.Email,
                 Role = new RoleEntity
                 {
+                    Id = x.Role.Id,
                     RoleName = x.Role.RoleName
                 },
             })

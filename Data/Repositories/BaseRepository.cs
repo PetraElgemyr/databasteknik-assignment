@@ -63,7 +63,11 @@ public class BaseRepository<TEntity>(DataContext context) : IBaseRepository<TEnt
         try
         {
             _db.Remove(entity);
-            await _context.SaveChangesAsync();
+           var result = await _context.SaveChangesAsync();
+            //if (result == 0)
+            //{
+            //    return false;
+            //}
             return true;
         }
         catch (Exception ex)

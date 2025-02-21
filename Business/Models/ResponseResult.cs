@@ -34,6 +34,12 @@ public class ResponseResult
         StatusCode = 201,
         Message = message
     };
+
+    public static ResponseResult NoContentSuccess() => new()
+    {
+        Success = true,
+        StatusCode = 204,
+    };
 }
 
 
