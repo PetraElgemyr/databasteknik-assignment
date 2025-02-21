@@ -19,12 +19,6 @@ public class UserEntity
     public string Email { get; set; } = null!;
     [Column(TypeName = "varchar(30)")]
     public string? PhoneNumber { get; set; }
-
-
-    public int CustomerId { get; set; }
-    public CustomerEntity Customer { get; set; } = null!;
-
-
     public int RoleId { get; set; }
     public RoleEntity Role { get; set; } = null!;
 }

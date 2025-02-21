@@ -14,6 +14,11 @@ public class PostalCodesController(IPostalCodeService postalCodeService) : Contr
     [HttpPost]
     public async Task<IActionResult> CreateNewPostalCode(PostalCodeRegistrationForm postalCodeForm)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest();
+        }
+
         var result = await _postalCodeService.CreatePostalCodeAsync(postalCodeForm);
 
         return result.StatusCode switch

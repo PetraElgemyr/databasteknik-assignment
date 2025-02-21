@@ -13,7 +13,6 @@ public static class UserFactory
             LastName = form.LastName,
             Email = form.Email,
             PhoneNumber = form.PhoneNumber,
-            CustomerId = form.CustomerId,
             RoleId = form.RoleId
         };
     }
@@ -27,7 +26,6 @@ public static class UserFactory
             LastName = form.LastName,
             Email = form.Email,
             PhoneNumber = form.PhoneNumber,
-            CustomerId = form.CustomerId,
             RoleId = form.RoleId
         };
     }
@@ -39,7 +37,6 @@ public static class UserFactory
             Id = entity.Id,
             FirstName = entity.FirstName,
             LastName = entity.LastName,
-            Customer = new UserCustomer {   CustomerName = entity.Customer.CustomerName},
             Role = new UserRole {  RoleName = entity.Role.RoleName }
         };
     }

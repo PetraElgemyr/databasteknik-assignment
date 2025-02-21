@@ -36,6 +36,11 @@ public class UsersController(IUserService userService) : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateNewUser(UserRegistrationForm form)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest();
+        }
+
         var result = await _userService.CreateUserAsync(form);
         return result.StatusCode switch
         {
@@ -49,6 +54,11 @@ public class UsersController(IUserService userService) : ControllerBase
     [HttpPut]
     public async Task<IActionResult> UpdateUser(UserUpdateForm form)
     {
+
+        if (!ModelState.IsValid)
+        {
+            return BadRequest();
+        }
         var result = await _userService.UpdateUserAsync(form);
         return result.StatusCode switch
         {

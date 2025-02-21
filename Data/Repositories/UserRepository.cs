@@ -21,7 +21,6 @@ public class UserRepository(DataContext context) : BaseRepository<UserEntity>(co
         // Klickbar sen och då hämta en user med all info
         var entities = await _context.Users
             .Include(x => x.Role)
-            .Include(x => x.Customer)
             .Select(x => new UserEntity
             {
                 Id = x.Id,
@@ -31,10 +30,6 @@ public class UserRepository(DataContext context) : BaseRepository<UserEntity>(co
                 {
                     RoleName = x.Role.RoleName
                 },
-                Customer = new CustomerEntity
-                {
-                    CustomerName = x.Customer.CustomerName,
-                }
             }).ToListAsync();
 
         return entities;
@@ -46,7 +41,6 @@ public class UserRepository(DataContext context) : BaseRepository<UserEntity>(co
     {
         var entities = await _context.Users
            .Include(x => x.Role)
-           .Include(x => x.Customer)
            .Where(x => x.Role.RoleName == roleName)
            .Select(x => new UserEntity
            {
@@ -64,7 +58,6 @@ public class UserRepository(DataContext context) : BaseRepository<UserEntity>(co
     {
         var entity = await _context.Users
             .Include(x => x.Role)
-            .Include(x => x.Customer)
             .Select(x => new UserEntity
             {
                 Id = x.Id,
@@ -75,10 +68,6 @@ public class UserRepository(DataContext context) : BaseRepository<UserEntity>(co
                 {
                     RoleName = x.Role.RoleName
                 },
-                Customer = new CustomerEntity
-                {
-                    CustomerName = x.Customer.CustomerName,
-                }
             })
             .FirstOrDefaultAsync(predicate);
 

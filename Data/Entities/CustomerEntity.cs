@@ -13,6 +13,4 @@ public class CustomerEntity
     public int CustomerTypeId { get; set; } 
     public CustomerTypeEntity CustomerType { get; set; } = null!;
     public ICollection<CustomerContactEntity> CustomerContacts { get; set; } = [];
-
-
 }
