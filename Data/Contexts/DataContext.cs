@@ -1,5 +1,7 @@
 ﻿using Data.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualBasic;
+using System.Reflection.Metadata;
 
 namespace Data.Contexts;
 
@@ -31,7 +33,8 @@ public class DataContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<ProjectServiceEntity>().HasKey(x => new {x.ProjectId, x.ServiceId});
+        modelBuilder.Entity<ProjectServiceEntity>()
+            .HasKey(x => new { x.ProjectId, x.ServiceId });
 
         modelBuilder.Entity<ProjectServiceEntity>()
             .HasOne(x => x.Project)
@@ -63,6 +66,8 @@ public class DataContext : DbContext
             .WithMany()
             .HasForeignKey(p => p.StatusTypeId)
             .OnDelete(DeleteBehavior.Restrict);
+
+  
 
     }
 

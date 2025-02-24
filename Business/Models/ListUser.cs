@@ -1,4 +1,5 @@
-﻿using Data.Entities;
+﻿using Business.Models.Roles;
+using Data.Entities;
 
 namespace Business.Models;
 

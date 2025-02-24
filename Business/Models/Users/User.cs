@@ -1,10 +1,10 @@
 ﻿using Data.Entities;
-using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Business.Models;
+namespace Business.Models.Users;
 
-public class UserRegistrationForm
+public class User
 {
+    public int Id { get; set; }
     public string FirstName { get; set; } = null!;
     public string LastName { get; set; } = null!;
     public string Email { get; set; } = null!;
@@ -13,3 +13,4 @@ public class UserRegistrationForm
 }
 
 
+             

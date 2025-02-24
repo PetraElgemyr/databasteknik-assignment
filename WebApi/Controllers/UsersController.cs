@@ -1,5 +1,5 @@
 ﻿using Business.Interfaces;
-using Business.Models;
+using Business.Models.Users;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.Controllers;
@@ -52,7 +52,7 @@ public class UsersController(IUserService userService) : ControllerBase
     }
 
     [HttpPut]
-    public async Task<IActionResult> UpdateUser(UserUpdateForm form)
+    public async Task<IActionResult> UpdateUser(User form)
     {
 
         if (!ModelState.IsValid)
@@ -86,7 +86,7 @@ public class UsersController(IUserService userService) : ControllerBase
 
 
     [HttpDelete]
-    public async Task<IActionResult> DeleteUser(UserUpdateForm form)
+    public async Task<IActionResult> DeleteUser(User form)
     {
 
         if (!ModelState.IsValid)

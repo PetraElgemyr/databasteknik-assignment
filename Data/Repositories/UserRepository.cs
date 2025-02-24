@@ -2,77 +2,99 @@
 using Data.Entities;
 using Data.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 using System.Linq.Expressions;
 
 namespace Data.Repositories;
 
 public class UserRepository(DataContext context) : BaseRepository<UserEntity>(context), IUserRepository
 {
-    //public override async Task<IEnumerable<UserEntity>> GetAllAsync()
-    //{
-    //    var entities = await _context.Users.ToListAsync();
-    //    return entities;
-    //}
-
     public async Task<IEnumerable<UserEntity>> GetAllListUsersAsync()
     {
-        // För att visa users i en överskådlig lista för admin (get alla users och visa basic info)
-        // Hämta firstname, lastname, customername, role
-        // Klickbar sen och då hämta en user med all info
-        var entities = await _context.Users
-            .Include(x => x.Role)
-            .Select(x => new UserEntity
-            {
-                Id = x.Id,
-                FirstName = x.FirstName,
-                LastName = x.LastName,
-                Role = new RoleEntity
+        try
+        {
+            // För att visa users i en överskådlig lista för admin (get alla users och visa basic info)
+            // Hämta firstname, lastname, customername, role
+            // Klickbar sen och då hämta en user med all info
+            var entities = await _context.Users
+                .Include(x => x.Role)
+                .Select(x => new UserEntity
                 {
-                    RoleName = x.Role.RoleName
-                },
-            }).ToListAsync();
+                    Id = x.Id,
+                    FirstName = x.FirstName,
+                    LastName = x.LastName,
+                    Role = new RoleEntity
+                    {
+                        RoleName = x.Role.RoleName
+                    },
+                }).ToListAsync();
 
-        return entities;
+            return entities;
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.Message);
+            return null!;
+        }
+
     }
 
 
     // Hämta en users namn och id baserat på roll
     public async Task<IEnumerable<UserEntity>> GetAllByRoleNameAsync(string roleName)
     {
-        var entities = await _context.Users
-           .Include(x => x.Role)
-           .Where(x => x.Role.RoleName == roleName)
-           .Select(x => new UserEntity
-           {
-               Id = x.Id,
-               FirstName = x.FirstName,
-               LastName = x.LastName
-           })
-           .ToListAsync();
+        try
+        {
+            var entities = await _context.Users
+                     .Include(x => x.Role)
+                     .Where(x => x.Role.RoleName == roleName)
+                     .Select(x => new UserEntity
+                     {
+                         Id = x.Id,
+                         FirstName = x.FirstName,
+                         LastName = x.LastName
+                     })
+                     .ToListAsync();
 
-        return entities;
+            return entities;
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.Message);
+            return null!;
+        }
+
     }
 
     // hämtar en user utan phonenumber, baserat på valfri predicate
     public override async Task<UserEntity?> GetAsync(Expression<Func<UserEntity, bool>> predicate)
     {
-        var entity = await _context.Users
-            .Include(x => x.Role)
-            .Select(x => new UserEntity
-            {
-                Id = x.Id,
-                FirstName = x.FirstName,
-                LastName = x.LastName,
-                Email = x.Email,
-                Role = new RoleEntity
-                {
-                    Id = x.Role.Id,
-                    RoleName = x.Role.RoleName
-                },
-            })
-            .FirstOrDefaultAsync(predicate);
 
-        return entity;
+        try
+        {
+            var entity = await _context.Users
+                .Include(x => x.Role)
+                .Select(x => new UserEntity
+                {
+                    Id = x.Id,
+                    FirstName = x.FirstName,
+                    LastName = x.LastName,
+                    Email = x.Email,
+                    Role = new RoleEntity
+                    {
+                        Id = x.Role.Id,
+                        RoleName = x.Role.RoleName
+                    },
+                })
+                .FirstOrDefaultAsync(predicate);
+
+            return entity;
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.Message);
+            return null!;
+        }
     }
 }
 

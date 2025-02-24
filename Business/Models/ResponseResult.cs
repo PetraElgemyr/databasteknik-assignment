@@ -14,6 +14,13 @@ public class ResponseResult
         Message = message
     };
 
+    public static ResponseResult EntityNotFound(string? message = default) => new()
+    {
+        Success = false,
+        StatusCode = 404,
+        Message = message,
+    };
+
     public static ResponseResult InvalidModel(string? message = default) => new()
     {
         Success = false,

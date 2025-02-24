@@ -2,10 +2,10 @@
 
 namespace Business.Models;
 
-public class Role
+public class Service
 {
     public int Id { get; set; }
-    public string RoleName { get; set; } = null!;
+    public string ServiceType { get; set; } = null!;
+    public decimal HourlyCost { get; set; }
 }
-
 

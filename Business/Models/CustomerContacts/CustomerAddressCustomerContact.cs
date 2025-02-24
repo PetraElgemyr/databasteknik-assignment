@@ -1,12 +1,13 @@
-﻿namespace Business.Models;
+﻿namespace Business.Models.CustomerContacts;
 
-public class UserUpdateForm
+public class CustomerAddressCustomerContact
 {
     public int Id { get; set; }
     public string FirstName { get; set; } = null!;
     public string LastName { get; set; } = null!;
     public string Email { get; set; } = null!;
     public string? PhoneNumber { get; set; }
-    public int RoleId { get; set; }
-
+    public int CustomerId { get; set; }
+    public string CustomerName { get; set; } = null!;
 }
+

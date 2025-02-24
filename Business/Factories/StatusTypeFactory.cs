@@ -11,7 +11,7 @@ public static class StatusTypeFactory
         return new StatusType
         {
             Id = statusType.Id,
-            StatusName = statusType.StatusType
+            StatusName = statusType.StatusTypeName
         };
     }
 }

@@ -13,18 +13,17 @@ public class ProjectEntity
 
     [Column(TypeName = "decimal(20,2)")]
     public decimal TotalCost { get; set; }
+    //[ForeignKey("Customer")]
     public int CustomerId { get; set; }
-
     public CustomerEntity Customer { get; set; } = null!;
+    //[ForeignKey("StatusType")]
     public int StatusTypeId { get; set; }
     public StatusTypeEntity StatusType { get; set; } = null!;
+    //[ForeignKey("User")]
     public int UserId { get; set; }
     public UserEntity User { get; set; } = null!;
-
-    public ICollection<ProjectServiceEntity> ProjectServices { get; set; } = [];
+    //public ICollection<ProjectServiceEntity> ProjectServices { get; set; } = [];
     public ICollection<ProjectLogEntity> ProjectLogs { get; set; } = [];
     public ICollection<ProjectExpenseEntity> ProjectExpenses { get; set; } = [];
     public ICollection<ProjectDocumentEntity> ProjectDocuments { get; set; } = [];
-
-
 }

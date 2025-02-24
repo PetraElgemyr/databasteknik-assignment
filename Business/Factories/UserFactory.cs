@@ -1,11 +1,13 @@
 ﻿using Business.Models;
+using Business.Models.Roles;
+using Business.Models.Users;
 using Data.Entities;
 
 namespace Business.Factories;
 
 public static class UserFactory
 {
-    public static UserEntity CreateUserEntity(UserRegistrationForm form)
+    public static UserEntity CreateUserEntityFromRegistrationForm(UserRegistrationForm form)
     {
         return new UserEntity
         {
@@ -17,20 +19,20 @@ public static class UserFactory
         };
     }
 
-    public static UserEntity CreateUserEntityFromUpdateForm(UserUpdateForm form)
+    public static UserEntity CreateUserEntityFromUser(User user)
     {
         return new UserEntity
         {
-            Id = form.Id,   
-            FirstName = form.FirstName,
-            LastName = form.LastName,
-            Email = form.Email,
-            PhoneNumber = form.PhoneNumber,
-            RoleId = form.RoleId
+            Id = user.Id,   
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            Email = user.Email,
+            PhoneNumber = user.PhoneNumber,
+            RoleId = user.RoleId
         };
     }
 
-    public static ListUser CreateListUser(UserEntity entity)
+    public static ListUser CreateListUserFromEntity(UserEntity entity)
     {
         return new ListUser
         {
@@ -38,6 +40,19 @@ public static class UserFactory
             FirstName = entity.FirstName,
             LastName = entity.LastName,
             Role = new UserRole {  RoleName = entity.Role.RoleName }
+        };
+    }
+
+    public static User CreateUserFromEntity(UserEntity entity)
+    {
+        return new User
+        {
+            Id = entity.Id,
+            FirstName = entity.FirstName,
+            LastName = entity.LastName,
+            Email = entity.Email,
+            PhoneNumber = entity.PhoneNumber,
+            RoleId = entity.RoleId
         };
     }
 }

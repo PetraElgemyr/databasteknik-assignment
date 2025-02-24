@@ -17,7 +17,7 @@ namespace Data.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    CustomerType = table.Column<string>(type: "nvarchar(100)", nullable: false)
+                    CustomerTypeName = table.Column<string>(type: "nvarchar(100)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -55,7 +55,7 @@ namespace Data.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ServiceType = table.Column<string>(type: "nvarchar(100)", nullable: false),
+                    ServiceTypeName = table.Column<string>(type: "nvarchar(100)", nullable: false),
                     HourlyCost = table.Column<decimal>(type: "decimal(20,2)", nullable: false)
                 },
                 constraints: table =>
@@ -69,7 +69,7 @@ namespace Data.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    StatusType = table.Column<string>(type: "nvarchar(100)", nullable: false)
+                    StatusTypeName = table.Column<string>(type: "nvarchar(100)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -92,6 +92,29 @@ namespace Data.Migrations
                         name: "FK_Customers_CustomerTypes_CustomerTypeId",
                         column: x => x.CustomerTypeId,
                         principalTable: "CustomerTypes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Users",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FirstName = table.Column<string>(type: "nvarchar(100)", nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(100)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(250)", nullable: false),
+                    PhoneNumber = table.Column<string>(type: "varchar(30)", nullable: true),
+                    RoleId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Users_Roles_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "Roles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -120,33 +143,39 @@ namespace Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Users",
+                name: "Projects",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    FirstName = table.Column<string>(type: "nvarchar(100)", nullable: false),
-                    LastName = table.Column<string>(type: "nvarchar(100)", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(250)", nullable: false),
-                    PhoneNumber = table.Column<string>(type: "varchar(30)", nullable: true),
+                    ProjectName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TotalCost = table.Column<decimal>(type: "decimal(20,2)", nullable: false),
                     CustomerId = table.Column<int>(type: "int", nullable: false),
-                    RoleId = table.Column<int>(type: "int", nullable: false)
+                    StatusTypeId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Users", x => x.Id);
+                    table.PrimaryKey("PK_Projects", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Users_Customers_CustomerId",
+                        name: "FK_Projects_Customers_CustomerId",
                         column: x => x.CustomerId,
                         principalTable: "Customers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Users_Roles_RoleId",
-                        column: x => x.RoleId,
-                        principalTable: "Roles",
+                        name: "FK_Projects_StatusTypes_StatusTypeId",
+                        column: x => x.StatusTypeId,
+                        principalTable: "StatusTypes",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Projects_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -175,48 +204,6 @@ namespace Data.Migrations
                         principalTable: "PostalCodes",
                         principalColumn: "PostalCode",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Projects",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ProjectName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    TotalCost = table.Column<decimal>(type: "decimal(20,2)", nullable: false),
-                    CustomerId = table.Column<int>(type: "int", nullable: false),
-                    StatusTypeId = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    StatusTypeEntityId = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Projects", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Projects_Customers_CustomerId",
-                        column: x => x.CustomerId,
-                        principalTable: "Customers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Projects_StatusTypes_StatusTypeEntityId",
-                        column: x => x.StatusTypeEntityId,
-                        principalTable: "StatusTypes",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Projects_StatusTypes_StatusTypeId",
-                        column: x => x.StatusTypeId,
-                        principalTable: "StatusTypes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Projects_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -315,29 +302,17 @@ namespace Data.Migrations
                 {
                     ProjectId = table.Column<int>(type: "int", nullable: false),
                     ServiceId = table.Column<int>(type: "int", nullable: false),
-                    EstimatedHours = table.Column<decimal>(type: "decimal(20,2)", nullable: false),
-                    ProjectEntityId = table.Column<int>(type: "int", nullable: true),
-                    ServiceEntityId = table.Column<int>(type: "int", nullable: true)
+                    EstimatedHours = table.Column<decimal>(type: "decimal(20,2)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ProjectServices", x => new { x.ProjectId, x.ServiceId });
-                    table.ForeignKey(
-                        name: "FK_ProjectServices_Projects_ProjectEntityId",
-                        column: x => x.ProjectEntityId,
-                        principalTable: "Projects",
-                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_ProjectServices_Projects_ProjectId",
                         column: x => x.ProjectId,
                         principalTable: "Projects",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_ProjectServices_Services_ServiceEntityId",
-                        column: x => x.ServiceEntityId,
-                        principalTable: "Services",
-                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_ProjectServices_Services_ServiceId",
                         column: x => x.ServiceId,
@@ -393,11 +368,6 @@ namespace Data.Migrations
                 column: "CustomerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Projects_StatusTypeEntityId",
-                table: "Projects",
-                column: "StatusTypeEntityId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Projects_StatusTypeId",
                 table: "Projects",
                 column: "StatusTypeId");
@@ -413,16 +383,6 @@ namespace Data.Migrations
                 column: "ProjectId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProjectServices_ProjectEntityId",
-                table: "ProjectServices",
-                column: "ProjectEntityId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ProjectServices_ServiceEntityId",
-                table: "ProjectServices",
-                column: "ServiceEntityId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_ProjectServices_ServiceId",
                 table: "ProjectServices",
                 column: "ServiceId");
@@ -434,15 +394,10 @@ namespace Data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_StatusTypes_StatusType",
+                name: "IX_StatusTypes_StatusTypeName",
                 table: "StatusTypes",
-                column: "StatusType",
+                column: "StatusTypeName",
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Users_CustomerId",
-                table: "Users",
-                column: "CustomerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_Email",
@@ -490,19 +445,19 @@ namespace Data.Migrations
                 name: "Services");
 
             migrationBuilder.DropTable(
+                name: "Customers");
+
+            migrationBuilder.DropTable(
                 name: "StatusTypes");
 
             migrationBuilder.DropTable(
                 name: "Users");
 
             migrationBuilder.DropTable(
-                name: "Customers");
+                name: "CustomerTypes");
 
             migrationBuilder.DropTable(
                 name: "Roles");
-
-            migrationBuilder.DropTable(
-                name: "CustomerTypes");
         }
     }
 }

@@ -11,27 +11,39 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddDbContext<DataContext>(x => x.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer")));
 
+
+builder.Services.AddScoped<ICustomerAddressRepository, CustomerAddressRepository>();
+builder.Services.AddScoped<ICustomerAddressService, CustomerAddressService>();
+
+builder.Services.AddScoped<ICustomerContactRepoitory, CustomerContactRepoitory>();
+builder.Services.AddScoped<ICustomerContactService, CustomerContactService>();
+
 builder.Services.AddScoped<ICustomerTypeRepository, CustomerTypeRepository>();
 builder.Services.AddScoped<ICustomerTypeService, CustomerTypeService>();
 
-
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
-//builder.Services.AddScoped<ICustomerService, CustomerService>();
-
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IUserService, UserService>();
-
-builder.Services.AddScoped<IStatusTypeRepository, StatusTypeRepository>();
-builder.Services.AddScoped<IStatusTypeService, StatusTypeService>();
-
-
-builder.Services.AddScoped<IRoleRepository, RoleRepository>();
-builder.Services.AddScoped<IRoleService, RoleService>();
+builder.Services.AddScoped<ICustomerService, CustomerService>();
 
 builder.Services.AddScoped<IPostalCodeRepository, PostalCodeRepository>();
 builder.Services.AddScoped<IPostalCodeService, PostalCodeService>();
 
+builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
+builder.Services.AddScoped<IProjectService, ProjectService>();
 
+builder.Services.AddScoped<IProjectScheduleRepository, ProjectScheduleRepository>();
+//builder.Services.AddScoped<I, ProjectScheduleService>();
+
+builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+builder.Services.AddScoped<IRoleService, RoleService>();
+
+builder.Services.AddScoped<IServiceRepository, ServiceRepository>();
+builder.Services.AddScoped<IServiceService, ServiceService>();
+
+builder.Services.AddScoped<IStatusTypeRepository, StatusTypeRepository>();
+builder.Services.AddScoped<IStatusTypeService, StatusTypeService>();
+
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddMemoryCache();
 

@@ -1,9 +1,9 @@
 ﻿using Business.Factories;
 using Business.Interfaces;
 using Business.Models;
+using Business.Models.Users;
 using Data.Interfaces;
 using Microsoft.Extensions.Caching.Memory;
-using System.Diagnostics;
 
 namespace Business.Services;
 
@@ -25,7 +25,7 @@ public class UserService(IUserRepository userRepository, IRoleRepository roleRep
             return ResponseResult<IEnumerable<ListUser>>.NotFound("No users found");
         }
 
-        var listUsers = entities.Select(UserFactory.CreateListUser);
+        var listUsers = entities.Select(UserFactory.CreateListUserFromEntity);
 
         return ResponseResult<IEnumerable<ListUser>>.Ok("Users found", listUsers);
     }
@@ -46,60 +46,67 @@ public class UserService(IUserRepository userRepository, IRoleRepository roleRep
         return projectManagers!;
     }
 
-    public async Task<ResponseResult<UserRegistrationForm?>> CreateUserAsync(UserRegistrationForm form)
+    public async Task<ResponseResult<User?>> CreateUserAsync(UserRegistrationForm form)
     {
 
         var role = await _roleRepository.GetAsync(r => r.Id == form.RoleId);
-        var entity = UserFactory.CreateUserEntity(form);
+        var entity = UserFactory.CreateUserEntityFromRegistrationForm(form);
 
         if (entity == null)
         {
-            return ResponseResult<UserRegistrationForm?>.BadRequest("User registration form is invalid");
+            return ResponseResult<User?>.BadRequest("User registration form is invalid");
         }
         if (role == null)
         {
-            return ResponseResult<UserRegistrationForm?>.NotFound("Role was not found");
+            return ResponseResult<User?>.NotFound("Role was not found");
         }
 
         var result = await _userRepository.AddAsync(entity);
         if (result == null)
         {
-            return ResponseResult<UserRegistrationForm?>.Error("Something went wrong when creating user.");
+            return ResponseResult<User?>.Error("Something went wrong when creating user.");
         }
+        var createdUser = UserFactory.CreateUserFromEntity(entity);
 
-        return ResponseResult<UserRegistrationForm?>.Created("User was created successfully!", form);
+        return ResponseResult<User?>.Created("User was created successfully!", createdUser);
     }
 
-    public async Task<ResponseResult<UserUpdateForm?>> UpdateUserAsync(UserUpdateForm form)
+    public async Task<ResponseResult<User?>> UpdateUserAsync(User userForm)
     {
 
-        var role = await _roleRepository.GetAsync(r => r.Id == form.RoleId);
-        var entity = UserFactory.CreateUserEntityFromUpdateForm(form);
+        var role = await _roleRepository.GetAsync(r => r.Id == userForm.RoleId);
+        var entity = UserFactory.CreateUserEntityFromUser(userForm);
+        var exists = await _userRepository.ExistsAsync(c => c.Id == entity.Id);
+
+        if (!exists)
+        {
+            return ResponseResult<User?>.NotFound("The user to update could not be found.");
+        }
 
         if (entity == null)
         {
-            return ResponseResult<UserUpdateForm?>.BadRequest("User registration form is invalid");
+            return ResponseResult<User?>.BadRequest("User registration form is invalid");
         }
         if (role == null)
         {
-            return ResponseResult<UserUpdateForm?>.NotFound("Role was not found");
+            return ResponseResult<User?>.NotFound("Role was not found");
         }
 
         var result = await _userRepository.UpdateAsync(entity);
         if (result == null)
         {
-            return ResponseResult<UserUpdateForm?>.Error("Something went wrong when updating the user.");
+            return ResponseResult<User?>.Error("Something went wrong when updating the user.");
         }
 
-        return ResponseResult<UserUpdateForm?>.Created("User was successfully updated!", form);
+        return ResponseResult<User?>.Created("User was successfully updated!", userForm);
     }
 
 
-    public async Task<ResponseResult> DeleteUserAsync(UserUpdateForm form)
+    public async Task<ResponseResult> DeleteUserAsync(User userForm)
     {
 
-        var role = await _roleRepository.GetAsync(r => r.Id == form.RoleId);
-        var entity = UserFactory.CreateUserEntityFromUpdateForm(form);
+        var role = await _roleRepository.GetAsync(r => r.Id == userForm.RoleId);
+        var entity = UserFactory.CreateUserEntityFromUser(userForm);
 
         if (entity == null)
         {
@@ -107,13 +114,13 @@ public class UserService(IUserRepository userRepository, IRoleRepository roleRep
         }
         if (role == null)
         {
-            return ResponseResult<UserUpdateForm>.NotFound("Role was not found");
+            return ResponseResult<User>.NotFound("Role was not found");
         }
 
         var deletedResult = await _userRepository.RemoveAsync(entity);
         if (!deletedResult)
         {
-            return ResponseResult.Failed("Something went wrong when updating the user.");
+            return ResponseResult.Failed("Something went wrong when deleting the user.");
         }
 
         return ResponseResult.NoContentSuccess();
@@ -131,7 +138,7 @@ public class UserService(IUserRepository userRepository, IRoleRepository roleRep
         var deletedResult = await _userRepository.RemoveAsync(entity);
         if (!deletedResult)
         {
-            return ResponseResult.Failed("Something went wrong when updating the user.");
+            return ResponseResult.Failed("Something went wrong when trying to delete the user.");
         }
 
         return ResponseResult.NoContentSuccess();

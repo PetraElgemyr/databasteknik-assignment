@@ -11,7 +11,7 @@ public static class CustomerTypeFactory
         return new CustomerType
         {
             Id = entity.Id,
-            CustomerTypeName = entity.CustomerType
+            CustomerTypeName = entity.CustomerTypeName
         };
     }
 }

@@ -15,4 +15,5 @@ public class CustomerTypeService(ICustomerTypeRepository customerTypeRepository)
         var types = entities.Select(CustomerTypeFactory.Create);
         return types;
     }
+
 }
