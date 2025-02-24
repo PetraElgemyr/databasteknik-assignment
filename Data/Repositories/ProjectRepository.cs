@@ -37,6 +37,7 @@ public class ProjectRepository(DataContext context) : BaseRepository<ProjectEnti
                 .Include(p => p.Customer.CustomerType)
                 .Include(p => p.StatusType)
                 .Include(p => p.User)
+                .Include(p => p.User.Role)
                 .FirstOrDefaultAsync(expression);
             if (entity == null)
             {
@@ -50,10 +51,7 @@ public class ProjectRepository(DataContext context) : BaseRepository<ProjectEnti
             return null!;
         }
     }
-
-
-
-    public  async Task<IEnumerable<ProjectEntity>?> GetAllProjectByCustomerId(int customerId)
+    public  async Task<IEnumerable<ProjectEntity>?> GetAllProjectByCustomerIdAsync(int customerId)
     {
         try
         {
@@ -70,5 +68,27 @@ public class ProjectRepository(DataContext context) : BaseRepository<ProjectEnti
             return null!;
         }
     }
-}
 
+    // TODO  kolla varför inte funkar
+    public async Task<ProjectEntity?> UpdateProjectByIdAsync(ProjectEntity entity)
+    {
+        try
+        {
+            var existingEntity = await _context.Set<ProjectEntity>().FirstOrDefaultAsync(p => p.Id == entity.Id);
+            if (existingEntity == null)
+            {
+                Debug.WriteLine("Entity not found in database");
+                return null;
+            }
+
+            _context.Projects.Update(entity);
+            await _context.SaveChangesAsync();
+            return existingEntity;
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.Message);
+            return null;
+        }
+    }
+}

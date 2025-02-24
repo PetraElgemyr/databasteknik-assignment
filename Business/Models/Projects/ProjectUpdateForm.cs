@@ -9,7 +9,20 @@ public class ProjectUpdateForm
     public string ProjectName { get; set; } = null!;
     public string Description { get; set; } = null!;
     public decimal TotalCost { get; set; }
-    public Customer Customer { get; set; } = null!;
-    public StatusType StatusType { get; set; } = null!;
-    public User User { get; set; } = null!;
+    public int CustomerId { get; set; }
+    public int StatusTypeId { get; set; }
+    public int UserId { get; set; }
+    public ProjectSchedule ProjectSchedule { get; set; } = null!;
+
 }
+
+//public class ProjectRegistrationForm
+//{
+//    public string ProjectName { get; set; } = null!;
+//    public string Description { get; set; } = null!;
+//    public decimal TotalCost { get; set; }
+//    public int CustomerId { get; set; }
+//    public int StatusTypeId { get; set; }
+//    public int UserId { get; set; }
+//    public ProjectSchedule ProjectSchedule { get; set; } = null!;
+//}

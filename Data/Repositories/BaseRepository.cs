@@ -42,7 +42,7 @@ public class BaseRepository<TEntity>(DataContext context) : IBaseRepository<TEnt
         var result = await _db.AnyAsync(predicate);
         return result;
     }
-
+    
     public virtual async Task<TEntity?> UpdateAsync(TEntity entity)
     {
         try

@@ -82,7 +82,6 @@ public class UserService(IUserRepository userRepository, IRoleRepository roleRep
         {
             return ResponseResult<User?>.NotFound("The user to update could not be found.");
         }
-
         if (entity == null)
         {
             return ResponseResult<User?>.BadRequest("User registration form is invalid");
@@ -93,12 +92,14 @@ public class UserService(IUserRepository userRepository, IRoleRepository roleRep
         }
 
         var result = await _userRepository.UpdateAsync(entity);
+        
         if (result == null)
         {
             return ResponseResult<User?>.Error("Something went wrong when updating the user.");
         }
+        var updatedUser = UserFactory.CreateUserFromEntity(entity);
 
-        return ResponseResult<User?>.Created("User was successfully updated!", userForm);
+        return ResponseResult<User?>.Created("User was successfully updated!", updatedUser);
     }
 
 

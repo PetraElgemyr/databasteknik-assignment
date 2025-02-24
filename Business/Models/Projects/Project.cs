@@ -1,7 +1,4 @@
-﻿using Business.Models.Customers;
-using Business.Models.Users;
-
-namespace Business.Models.Projects;
+﻿namespace Business.Models.Projects;
 
 public class Project
 {
@@ -9,7 +6,7 @@ public class Project
     public string ProjectName { get; set; } = null!;
     public string Description { get; set; } = null!;
     public decimal TotalCost { get; set; }
-    public Customer Customer { get; set; } = null!;
-    public StatusType StatusType { get; set; } = null!;
-    public User User { get; set; } = null!;
+    public int CustomerId { get; set; } 
+    public int StatusTypeId { get; set; } 
+    public int UserId { get; set; } 
 }

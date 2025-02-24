@@ -35,10 +35,10 @@ public class ProjectsController(IProjectService projectService) : ControllerBase
     }
 
     [HttpGet]
-    [Route("/customer/{customerId}")]
-    public async Task<IActionResult> GetProjectsByCustomerId(int customerId)
+    [Route("customer/{id}")]
+    public async Task<IActionResult> GetProjectsByCustomerId(int id)
     {
-        var result = await _projectService.GetAllProjectsByCustomerIdAsync(customerId);
+        var result = await _projectService.GetAllProjectsByCustomerIdAsync(id);
         return result.StatusCode switch
         {
             200 => Ok(result.Result),
@@ -88,9 +88,9 @@ public class ProjectsController(IProjectService projectService) : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteProject(int projectId)
+    public async Task<IActionResult> DeleteProject(int id)
     {
-        var result = await _projectService.DeleteProjectByIdAsync(projectId);
+        var result = await _projectService.DeleteProjectByIdAsync(id);
         return result.StatusCode switch
         {
             204 => NoContent(),

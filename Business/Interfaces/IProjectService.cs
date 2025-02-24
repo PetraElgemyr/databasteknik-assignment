@@ -9,6 +9,6 @@ public interface IProjectService
     Task<ResponseResult> DeleteProjectByIdAsync(int id);
     Task<ResponseResult<IEnumerable<ListProject>?>> GetAllProjectsAsync();
     Task<ResponseResult<IEnumerable<ListProject>?>> GetAllProjectsByCustomerIdAsync(int customerId);
-    Task<ResponseResult<Project?>> GetOneProjectByIdAsync(int projectId);
+    Task<ResponseResult<ProjectWithDetails?>> GetOneProjectByIdAsync(int projectId);
     Task<ResponseResult<Project?>> UpdateProjectAsync(ProjectUpdateForm updateForm);
 }
