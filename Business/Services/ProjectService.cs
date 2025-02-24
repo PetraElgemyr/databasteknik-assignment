@@ -160,28 +160,27 @@ public class ProjectService(IProjectRepository projectRepository, IProjectSchedu
           
             var updatedProject = ProjectFactory.CreateProjectFromEntity(projectEntity);
 
-            //var oldSchedule = await _projectScheduleRepository.GetAsync(s => s.ProjectId == updateForm.Id);
-            //if(oldSchedule == null)
-            //{
-            //    return ResponseResult<Project?>.Error("No date schedule found for the project.");
-            //}
+            var oldSchedule = await _projectScheduleRepository.GetAsync(s => s.ProjectId == updateForm.Id);
+            if (oldSchedule == null)
+            {
+                return ResponseResult<Project?>.Error("No date schedule found for the project.");
+            }
 
-            //var updatedSchedule = new ProjectSchedule
-            //{
-            //    Id = oldSchedule.Id,
-            //    ProjectId = updateForm.Id,
-            //    StartDate = updateForm.ProjectSchedule.StartDate,
-            //    EndDate = updateForm.ProjectSchedule.EndDate,
-            //};
+            var updatedSchedule = new ProjectSchedule
+            {
+                Id = oldSchedule.Id,
+                ProjectId = updateForm.Id,
+                StartDate = updateForm.ProjectSchedule.StartDate,
+                EndDate = updateForm.ProjectSchedule.EndDate,
+            };
 
-            //var updatedProjectScheduleEntity  = ProjectScheduleFactory.CreateEntityFromForm(updatedSchedule);
-            //var updatedScheduleEntity = await _projectScheduleRepository.UpdateAsync(updatedProjectScheduleEntity);
-            //if (updatedScheduleEntity == null)
-            //{
-            //    return ResponseResult<Project?>.Error("Could not update the dates for project");
-            //}
-           
-            //var updatedProject = ProjectFactory.CreateProjectFromEntity(updateProjectEntity);
+            var updatedProjectScheduleEntity = ProjectScheduleFactory.CreateEntityFromForm(updatedSchedule);
+            var updatedScheduleEntity = await _projectScheduleRepository.UpdateAsync(updatedProjectScheduleEntity);
+            if (updatedScheduleEntity == null)
+            {
+                return ResponseResult<Project?>.Error("Could not update the dates for project");
+            }
+
             return ResponseResult<Project?>.Ok("Project was successfully updated", updatedProject);
 
         }
