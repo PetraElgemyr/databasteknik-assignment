@@ -8,4 +8,6 @@ public class ListProject
     public decimal TotalCost { get; set; }
     public string CustomerName { get; set; } = null!;
     public string StatusTypeName { get; set; } = null!;
+    public DateTime StartDate { get; set; }
+    public DateTime? EndDate { get; set; }
 }

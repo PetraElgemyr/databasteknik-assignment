@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20250224113008_Init")]
+    [Migration("20250224212607_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -202,6 +202,9 @@ namespace Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("ProjectScheduleId")
+                        .HasColumnType("int");
+
                     b.Property<int>("StatusTypeId")
                         .HasColumnType("int");
 
@@ -214,6 +217,9 @@ namespace Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CustomerId");
+
+                    b.HasIndex("ProjectScheduleId")
+                        .IsUnique();
 
                     b.HasIndex("StatusTypeId");
 
@@ -293,15 +299,10 @@ namespace Data.Migrations
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("ProjectId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ProjectId");
 
                     b.ToTable("ProjectSchedules");
                 });
@@ -480,6 +481,12 @@ namespace Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("Data.Entities.ProjectScheduleEntity", "ProjectSchedule")
+                        .WithOne()
+                        .HasForeignKey("Data.Entities.ProjectEntity", "ProjectScheduleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Data.Entities.StatusTypeEntity", "StatusType")
                         .WithMany()
                         .HasForeignKey("StatusTypeId")
@@ -493,6 +500,8 @@ namespace Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Customer");
+
+                    b.Navigation("ProjectSchedule");
 
                     b.Navigation("StatusType");
 
@@ -514,17 +523,6 @@ namespace Data.Migrations
                 {
                     b.HasOne("Data.Entities.ProjectEntity", "Project")
                         .WithMany("ProjectLogs")
-                        .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Project");
-                });
-
-            modelBuilder.Entity("Data.Entities.ProjectScheduleEntity", b =>
-                {
-                    b.HasOne("Data.Entities.ProjectEntity", "Project")
-                        .WithMany()
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();

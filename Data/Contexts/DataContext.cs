@@ -67,7 +67,11 @@ public class DataContext : DbContext
             .HasForeignKey(p => p.StatusTypeId)
             .OnDelete(DeleteBehavior.Restrict);
 
-  
+        modelBuilder.Entity<ProjectEntity>()
+           .HasOne(p => p.ProjectSchedule)
+           .WithOne()
+           .HasForeignKey<ProjectEntity>(p => p.ProjectScheduleId)
+           .OnDelete(DeleteBehavior.Cascade);
 
     }
 

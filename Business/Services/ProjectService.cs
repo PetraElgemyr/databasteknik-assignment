@@ -11,12 +11,17 @@ using System.Diagnostics;
 
 namespace Business.Services;
 
-public class ProjectService(IProjectRepository projectRepository, IProjectScheduleRepository projectScheduleRepository, ICustomerRepository customerRepository, IStatusTypeRepository statusTypeRepository) : IProjectService
+public class ProjectService(IProjectRepository projectRepository,
+    IProjectScheduleRepository projectScheduleRepository,
+    ICustomerRepository customerRepository,
+    IStatusTypeRepository statusTypeRepository,
+    IUserRepository userRepository) : IProjectService
 {
     private readonly IProjectRepository _projectRepository = projectRepository;
     private readonly IProjectScheduleRepository _projectScheduleRepository = projectScheduleRepository;
     private readonly ICustomerRepository _customerRepository = customerRepository;
     private readonly IStatusTypeRepository _statusTypeRepository = statusTypeRepository;
+    private readonly IUserRepository _userRepository = userRepository;
 
     public async Task<ResponseResult<IEnumerable<ListProject>?>> GetAllProjectsAsync()
     {
@@ -40,9 +45,7 @@ public class ProjectService(IProjectRepository projectRepository, IProjectSchedu
             var projectEntity = await _projectRepository.GetAsync(x => x.Id == projectId);
 
             if (projectEntity == null)
-            {
                 return ResponseResult<ProjectWithDetails?>.NotFound($"No project with id {projectId} could be found.");
-            }
 
             var projectWithDetails = ProjectFactory.CreateProjectWithDetailsFromEntity(projectEntity);
             return ResponseResult<ProjectWithDetails?>.Ok("Project with details successfully fetched!", projectWithDetails);
@@ -59,11 +62,9 @@ public class ProjectService(IProjectRepository projectRepository, IProjectSchedu
         try
         {
             var customer = await _customerRepository.GetAsync(c => c.Id == customerId);
-
             if (customer == null)
-            {
                 return ResponseResult<IEnumerable<ListProject>?>.NotFound($"No customer with id: {customerId} exists.");
-            }
+
             var entities = await _projectRepository.GetAllProjectByCustomerIdAsync(customerId);
             var listProjectsForCustomer = entities!.Select(ProjectFactory.CreateListProjectFromEntity);
 
@@ -84,43 +85,31 @@ public class ProjectService(IProjectRepository projectRepository, IProjectSchedu
         {
             var customer = await _customerRepository.GetAsync(c => c.Id == form.CustomerId);
             var statusType = await _statusTypeRepository.GetAsync(s => s.Id == form.StatusTypeId);
+            var user = await _userRepository.GetAsync(u => u.Id == form.UserId);
 
             if (customer == null)
-            {
-                return ResponseResult<Project?>.NotFound("No customer with that id exists. Could not create project with the provided customer");
-            }
+                return ResponseResult<Project?>.BadRequest("No customer with that id exists. Could not create project with the provided customer");
             if (statusType == null)
-            {
-                return ResponseResult<Project?>.NotFound("No statusType with that id exists. Could not create project with that status");
-            }
+                return ResponseResult<Project?>.BadRequest("No statusType with that id exists. Could not create project with an invalid status!");
+            if (user == null)
+                return ResponseResult<Project?>.BadRequest("No user with that id exists. Could not create project with invalid user.");
 
-            var projectEntity = ProjectFactory.CreateEntityFromRegistrationForm(form);
-            var createdProjectEntityWithId = await _projectRepository.AddAsync(projectEntity);
+            var scheduleEntityToAdd = ProjectScheduleFactory.CreateEntityFromRegistrationForm(form.ProjectSchedule);
+            var createdScheduleWithId = await _projectScheduleRepository.AddAsync(scheduleEntityToAdd);
+
+            if (createdScheduleWithId == null)
+                return ResponseResult<Project?>.Error("Something went wrong when trying to create the date schedule. Project could not be created");
+
+            var projectEntityWithSchedule = ProjectFactory.CreateEntityFromRegistrationForm(form, createdScheduleWithId);
+            var createdProjectEntityWithId = await _projectRepository.AddAsync(projectEntityWithSchedule);
 
             if (createdProjectEntityWithId == null)
             {
-                return ResponseResult<Project?>.Error("Something went wrong when trying to create the project");
+                await _projectScheduleRepository.RemoveAsync(createdScheduleWithId);
+                return ResponseResult<Project?>.Error("Something went wrong when trying to create the project. Removed the created schedule.");
+
             }
-
-            var schedule = new ProjectSchedule
-            {
-                // måste tillsätta mitt nya projektid
-                ProjectId = createdProjectEntityWithId.Id,
-                StartDate = form.ProjectSchedule.StartDate,
-                EndDate = form.ProjectSchedule.EndDate,
-            };
-            var projectScheduleEntity = ProjectScheduleFactory.CreateEntityFromForm(schedule);
-            var createdScheduleWithId = await _projectScheduleRepository.AddAsync(projectScheduleEntity);
-
-            if (createdScheduleWithId == null)
-            {
-                // Om schemat inte kan skapas, radera mitt skapade projekt o skicka felmeddelande!
-                await _projectRepository.RemoveAsync(createdProjectEntityWithId);
-                return ResponseResult<Project?>.Error("Something went wrong when trying to create the project schedule. Project could not be created");
-            }
-
             var projectResult = ProjectFactory.CreateProjectFromEntity(createdProjectEntityWithId);
-            var scheduleResult = ProjectScheduleFactory.CreateScheduleFromEntity(createdScheduleWithId);
             return ResponseResult<Project?>.Created("Project was successfully created!", projectResult);
         }
         catch (Exception ex)
@@ -136,53 +125,36 @@ public class ProjectService(IProjectRepository projectRepository, IProjectSchedu
         {
             var customer = await _customerRepository.GetAsync(c => c.Id == updateForm.CustomerId);
             var statusType = await _statusTypeRepository.GetAsync(s => s.Id == updateForm.StatusTypeId);
+            var user = await _userRepository.GetAsync(u => u.Id == updateForm.UserId);
             var exists = await _projectRepository.ExistsAsync(c => c.Id == updateForm.Id);
 
             if (!exists)
-            {
                 return ResponseResult<Project?>.NotFound("No project with that id exists.");
-            }
             if (customer == null)
-            {
-                return ResponseResult<Project?>.NotFound("No customer with that id exists. Could not create project with the provided customer");
-            }
+                return ResponseResult<Project?>.NotFound("No customer with that id exists. Could not update project with the provided customer");
             if (statusType == null)
-            {
-                return ResponseResult<Project?>.NotFound("No statusType with that id exists. Could not create project with that status");
-            }
-           
-            ProjectEntity projectEntity = ProjectFactory.CreateEntityFromUpdateForm(updateForm);
-            var updateResult = await _projectRepository.UpdateAsync(projectEntity);
-            if (updateResult == null)
-            {
-                return ResponseResult<Project?>.Error("Something went wrong when updating the project");
-            }
-          
-            var updatedProject = ProjectFactory.CreateProjectFromEntity(projectEntity);
+                return ResponseResult<Project?>.NotFound("No statusType with that id exists. Could not update project with that status");
+            if (user == null)
+                return ResponseResult<Project?>.BadRequest("No user with that id exists. Could not update project with invalid user.");
 
-            var oldSchedule = await _projectScheduleRepository.GetAsync(s => s.ProjectId == updateForm.Id);
-            if (oldSchedule == null)
-            {
-                return ResponseResult<Project?>.Error("No date schedule found for the project.");
-            }
+            var scheduleEntityToUpdate = ProjectScheduleFactory.CreateEntityFromUpdateFormWithId(updateForm.ProjectSchedule);
+            var updatedScheduleEntity = await _projectScheduleRepository.UpdateAsync(scheduleEntityToUpdate);
 
-            var updatedSchedule = new ProjectSchedule
-            {
-                Id = oldSchedule.Id,
-                ProjectId = updateForm.Id,
-                StartDate = updateForm.ProjectSchedule.StartDate,
-                EndDate = updateForm.ProjectSchedule.EndDate,
-            };
-
-            var updatedProjectScheduleEntity = ProjectScheduleFactory.CreateEntityFromForm(updatedSchedule);
-            var updatedScheduleEntity = await _projectScheduleRepository.UpdateAsync(updatedProjectScheduleEntity);
             if (updatedScheduleEntity == null)
+                return ResponseResult<Project?>.Error("Something went wrong when trying to create the date schedule. Project could not be created");
+
+            var projectEntityWithUpdatedSchedule = ProjectFactory.CreateEntityFromUpdateForm(updateForm, updatedScheduleEntity);
+            var updatedProjectEntity = await _projectRepository.UpdateAsync(projectEntityWithUpdatedSchedule);
+
+            if (updatedProjectEntity == null)
             {
-                return ResponseResult<Project?>.Error("Could not update the dates for project");
+                var oldScheduleEntity = ProjectScheduleFactory.CreateEntityFromUpdateFormWithId(updateForm.ProjectSchedule);
+                await _projectScheduleRepository.UpdateAsync(oldScheduleEntity);
+                return ResponseResult<Project?>.Error("Something went wrong when trying to update the project. Schedule did not update.");
             }
 
-            return ResponseResult<Project?>.Ok("Project was successfully updated", updatedProject);
-
+            var projectResult = ProjectFactory.CreateProjectFromEntity(updatedProjectEntity);
+            return ResponseResult<Project?>.Ok("Project was successfully updated!", projectResult);
         }
         catch (Exception ex)
         {
@@ -196,20 +168,22 @@ public class ProjectService(IProjectRepository projectRepository, IProjectSchedu
         try
         {
             var projectEntityToDelete = await _projectRepository.GetAsync(x => x.Id == id);
-
             if (projectEntityToDelete == null)
-            {
                 return ResponseResult.EntityNotFound($"The project with id: {id} could not be found.");
-            }
 
             var result = await _projectRepository.RemoveAsync(projectEntityToDelete);
             if (!result)
-            {
                 return ResponseResult.Failed("Something went wrong. Could not delete project.");
-            }
 
-            // TODO kolla med Hans om man måste radera alla projectschedules med det projectId:t också
-            return ResponseResult.NoContentSuccess();
+            var scheduleEntityToDelete = await _projectScheduleRepository.GetAsync(s => s.Id == projectEntityToDelete.ProjectScheduleId);
+            if (scheduleEntityToDelete == null)
+                return ResponseResult.Succeeded("Project was successfully removed, but no project schedule was found and could be deleted.");
+            
+            var scheduleResult = await _projectScheduleRepository.RemoveAsync(scheduleEntityToDelete!);
+            if (scheduleResult)
+                return ResponseResult.NoContentSuccess();
+
+            return ResponseResult.Succeeded("Project was deleted but something went wrong wehen deleting the project schedule.");
         }
         catch (Exception ex)
         {

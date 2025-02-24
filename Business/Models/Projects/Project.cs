@@ -9,4 +9,5 @@ public class Project
     public int CustomerId { get; set; } 
     public int StatusTypeId { get; set; } 
     public int UserId { get; set; } 
+    public int ProjectScheduleId { get; set; }
 }

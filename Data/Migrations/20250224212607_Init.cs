@@ -37,6 +37,20 @@ namespace Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ProjectSchedules",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProjectSchedules", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Roles",
                 columns: table => new
                 {
@@ -151,6 +165,7 @@ namespace Data.Migrations
                     ProjectName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     TotalCost = table.Column<decimal>(type: "decimal(20,2)", nullable: false),
+                    ProjectScheduleId = table.Column<int>(type: "int", nullable: false),
                     CustomerId = table.Column<int>(type: "int", nullable: false),
                     StatusTypeId = table.Column<int>(type: "int", nullable: false),
                     UserId = table.Column<int>(type: "int", nullable: false)
@@ -164,6 +179,12 @@ namespace Data.Migrations
                         principalTable: "Customers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Projects_ProjectSchedules_ProjectScheduleId",
+                        column: x => x.ProjectScheduleId,
+                        principalTable: "ProjectSchedules",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Projects_StatusTypes_StatusTypeId",
                         column: x => x.StatusTypeId,
@@ -276,27 +297,6 @@ namespace Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ProjectSchedules",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ProjectId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ProjectSchedules", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ProjectSchedules_Projects_ProjectId",
-                        column: x => x.ProjectId,
-                        principalTable: "Projects",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "ProjectServices",
                 columns: table => new
                 {
@@ -368,6 +368,12 @@ namespace Data.Migrations
                 column: "CustomerId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Projects_ProjectScheduleId",
+                table: "Projects",
+                column: "ProjectScheduleId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Projects_StatusTypeId",
                 table: "Projects",
                 column: "StatusTypeId");
@@ -376,11 +382,6 @@ namespace Data.Migrations
                 name: "IX_Projects_UserId",
                 table: "Projects",
                 column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ProjectSchedules_ProjectId",
-                table: "ProjectSchedules",
-                column: "ProjectId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProjectServices_ServiceId",
@@ -427,9 +428,6 @@ namespace Data.Migrations
                 name: "ProjectLogs");
 
             migrationBuilder.DropTable(
-                name: "ProjectSchedules");
-
-            migrationBuilder.DropTable(
                 name: "ProjectServices");
 
             migrationBuilder.DropTable(
@@ -446,6 +444,9 @@ namespace Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "Customers");
+
+            migrationBuilder.DropTable(
+                name: "ProjectSchedules");
 
             migrationBuilder.DropTable(
                 name: "StatusTypes");

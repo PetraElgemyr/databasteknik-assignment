@@ -5,5 +5,4 @@ namespace Data.Interfaces;
 public interface IProjectRepository : IBaseRepository<ProjectEntity>
 {
     Task<IEnumerable<ProjectEntity>?> GetAllProjectByCustomerIdAsync(int customerId);
-    Task<ProjectEntity?> UpdateProjectByIdAsync(ProjectEntity entity);
 }

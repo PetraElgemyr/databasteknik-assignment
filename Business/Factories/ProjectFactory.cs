@@ -20,6 +20,8 @@ public static class ProjectFactory
             TotalCost = entity.TotalCost,
             CustomerName = entity.Customer.CustomerName,
             StatusTypeName = entity.StatusType.StatusTypeName,
+            StartDate = entity.ProjectSchedule.StartDate,
+            EndDate = entity.ProjectSchedule.EndDate
         };
     }
 
@@ -31,33 +33,10 @@ public static class ProjectFactory
             ProjectName = entity.ProjectName,
             Description = entity.Description,
             TotalCost = entity.TotalCost,
-            StatusTypeId   = entity.StatusTypeId,
+            StatusTypeId = entity.StatusTypeId,
             CustomerId = entity.CustomerId,
             UserId = entity.UserId,
-            //Customer = new Customer
-            //{
-            //    Id = entity.Customer.Id,
-            //    CustomerName = entity.Customer.CustomerName,
-            //    CustomerType = new CustomerType
-            //    {
-            //        Id = entity.Customer.CustomerType.Id,
-            //        CustomerTypeName = entity.Customer.CustomerType.CustomerTypeName,
-            //    }
-            //},
-            //StatusType = new StatusType
-            //{
-            //    Id = entity.StatusType.Id,
-            //    StatusName = entity.StatusType.StatusTypeName
-            //},
-            //User = new User
-            //{
-            //    Id = entity.User.Id,
-            //    FirstName = entity.User.FirstName,
-            //    LastName = entity.User.LastName,
-            //    Email = entity.User.Email,
-            //    PhoneNumber = entity.User.PhoneNumber,
-            //    RoleId = entity.User.Role.Id
-            //}
+            ProjectScheduleId = entity.ProjectScheduleId,
         };
     }
 
@@ -69,6 +48,12 @@ public static class ProjectFactory
             ProjectName = entity.ProjectName,
             Description = entity.Description,
             TotalCost = entity.TotalCost,
+            ProjectSchedule = new ProjectSchedule
+            {
+                Id = entity.ProjectSchedule.Id,
+                StartDate = entity.ProjectSchedule.StartDate,
+                EndDate = entity.ProjectSchedule.EndDate
+            },
             Customer = new Customer
             {
                 Id = entity.Customer.Id,
@@ -96,7 +81,7 @@ public static class ProjectFactory
         };
     }
 
-    public static ProjectEntity CreateEntityFromRegistrationForm(ProjectRegistrationForm form)
+    public static ProjectEntity CreateEntityFromRegistrationForm(ProjectRegistrationForm form, ProjectScheduleEntity scheduleEntity)
     {
         return new ProjectEntity
         {
@@ -105,13 +90,13 @@ public static class ProjectFactory
             TotalCost = form.TotalCost,
             CustomerId = form.CustomerId,
             StatusTypeId = form.StatusTypeId,
-            UserId = form.UserId
+            UserId = form.UserId,
+            ProjectScheduleId = scheduleEntity.Id,
         };
     }
 
-    public static ProjectEntity CreateEntityFromUpdateForm(ProjectUpdateForm form)
+    public static ProjectEntity CreateEntityFromUpdateForm(ProjectUpdateForm form, ProjectScheduleEntity scheduleEntity)
     {
-
         return new ProjectEntity
         {
             Id = form.Id,
@@ -120,45 +105,12 @@ public static class ProjectFactory
             TotalCost = form.TotalCost,
             CustomerId = form.CustomerId,
             StatusTypeId = form.StatusTypeId,
-            UserId = form.UserId
-            //Id = form.Id,
-            //ProjectName = form.ProjectName,
-            //Description = form.Description,
-            //TotalCost = form.TotalCost,
-            //CustomerId = form.Customer.Id,
-            //Customer = new CustomerEntity
-            //{
-            //    Id = form.Customer.Id,
-            //    CustomerName = form.Customer.CustomerName,
-            //    CustomerTypeId = form.Customer.CustomerType.Id,
-            //    CustomerType = new CustomerTypeEntity
-            //    {
-            //        Id = form.Customer.CustomerType.Id,
-            //        CustomerTypeName = form.Customer.CustomerType.CustomerTypeName
-            //    },
-            //},
-            //StatusTypeId = form.StatusType.Id,
-            //StatusType = new StatusTypeEntity
-            //{
-            //    Id = form.StatusType.Id,
-            //    StatusTypeName = form.StatusType.StatusName
-            //},
-            //UserId = form.User.Id,
-            //User = new UserEntity
-            //{
-            //    Id = form.User.Id,
-            //    FirstName = form.User.FirstName,
-            //    LastName = form.User.LastName,
-            //    Email = form.User.Email,
-            //    PhoneNumber = form.User.PhoneNumber,
-            //    RoleId = form.User.RoleId,
-            //    //Role = new RoleEntity
-            //    //{
-            //    //    Id = form.User.Role.Id,
-            //    //    RoleName = form.User.Role.RoleName
-            //    //}
+            UserId = form.UserId,
+            ProjectScheduleId = scheduleEntity.Id,
         };
     }
+
+
 }
 
 

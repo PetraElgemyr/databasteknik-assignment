@@ -55,10 +55,13 @@ INSERT INTO CustomerAddresses VALUES ('Nissastigen', '6', '12841', 5)
 INSERT INTO CustomerAddresses VALUES ('Nissastigen', '6', '12841', 6)
 INSERT INTO CustomerAddresses VALUES ('Nissastigen', '6', '12841', 7)
 
+INSERT INTO ProjectSchedules VALUES ('2019-03-01', '2019-10-20');
+INSERT INTO ProjectSchedules VALUES ('2025-01-15', '2025-03-02')
+INSERT INTO ProjectSchedules VALUES ('2026-10-17', '2027-05-28');
 
-INSERT INTO Projects VALUES ('Databasteknik', 'Beskrivning av Databasteknik...', 170000, 1, 2,1)
-INSERT INTO Projects VALUES ('Nackademin Skolportal', 'Ny skolportal för Nackademin...', 300000, 1, 1,5)
-INSERT INTO Projects VALUES ('Opala', 'Nisses herrmode... blabla', 1950000, 4, 3,6)
+INSERT INTO Projects VALUES ('Databasteknik', 'Beskrivning av Databasteknik...', 170000,2, 1, 2,1)
+INSERT INTO Projects VALUES ('Nackademin Skolportal', 'Ny skolportal för Nackademin...', 300000, 3, 1, 1,5)
+INSERT INTO Projects VALUES ('Opala', 'Nisses herrmode... blabla', 1950000, 1, 4, 3,6)
 
 INSERT INTO ProjectServices VALUES (1, 1, 180);
 INSERT INTO ProjectServices VALUES (2, 2, 300);
@@ -66,9 +69,7 @@ INSERT INTO ProjectServices VALUES (2, 3, 155);
 INSERT INTO ProjectServices VALUES (2, 4, 200);
 INSERT INTO ProjectServices VALUES (3, 3, 600);
 
-INSERT INTO ProjectSchedules VALUES ('2019-03-01', '2019-10-20', 3);
-INSERT INTO ProjectSchedules VALUES ('2025-01-15', '2025-03-02', 1)
-INSERT INTO ProjectSchedules VALUES ('2026-10-17', '2027-05-28', 2);
+
 
 
 

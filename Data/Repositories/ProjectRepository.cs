@@ -17,6 +17,7 @@ public class ProjectRepository(DataContext context) : BaseRepository<ProjectEnti
             var entities = await _context.Projects
                      .Include(p => p.Customer)
                      .Include(p => p.StatusType)
+                     .Include(p => p.ProjectSchedule)
                      .ToListAsync();
             return entities;
         }
@@ -33,12 +34,14 @@ public class ProjectRepository(DataContext context) : BaseRepository<ProjectEnti
         try
         {
             var entity = await _context.Projects
+                .Include(p => p.ProjectSchedule)
                 .Include(p => p.Customer)
                 .Include(p => p.Customer.CustomerType)
                 .Include(p => p.StatusType)
                 .Include(p => p.User)
                 .Include(p => p.User.Role)
                 .FirstOrDefaultAsync(expression);
+
             if (entity == null)
             {
                 return null!;
@@ -58,6 +61,7 @@ public class ProjectRepository(DataContext context) : BaseRepository<ProjectEnti
             var entities = await _context.Projects
                      .Include(p => p.Customer)
                      .Include(p => p.StatusType)
+                     .Include(p => p.ProjectSchedule)
                      .Where(p => p.CustomerId == customerId)
                      .ToListAsync();
             return entities;
@@ -66,29 +70,6 @@ public class ProjectRepository(DataContext context) : BaseRepository<ProjectEnti
         {
             Debug.WriteLine(ex.Message);
             return null!;
-        }
-    }
-
-    // TODO  kolla varför inte funkar
-    public async Task<ProjectEntity?> UpdateProjectByIdAsync(ProjectEntity entity)
-    {
-        try
-        {
-            var existingEntity = await _context.Set<ProjectEntity>().FirstOrDefaultAsync(p => p.Id == entity.Id);
-            if (existingEntity == null)
-            {
-                Debug.WriteLine("Entity not found in database");
-                return null;
-            }
-
-            _context.Projects.Update(entity);
-            await _context.SaveChangesAsync();
-            return existingEntity;
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine(ex.Message);
-            return null;
         }
     }
 }
