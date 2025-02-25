@@ -74,8 +74,6 @@ public class ProjectsController(IProjectService projectService) : ControllerBase
         {
             return BadRequest("Invalid project provided.");
         }
-
-
         var result = await _projectService.UpdateProjectAsync(updateForm);
 
         return result.StatusCode switch

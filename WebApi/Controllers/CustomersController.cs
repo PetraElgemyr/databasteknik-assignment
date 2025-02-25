@@ -43,6 +43,11 @@ public class CustomersController(ICustomerService customerService) : ControllerB
     [HttpPost]
     public async Task<IActionResult> CreateOneCustomer(CustomerRegistrationForm form)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest("Invalid customer provided.");
+        }
+
         var result = await _customerService.CreateCustomerAsync(form);
 
         return result.StatusCode switch
@@ -58,6 +63,10 @@ public class CustomersController(ICustomerService customerService) : ControllerB
     [HttpPut]
     public async Task<IActionResult> UpdateOneCustomer(Customer updateForm)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest("Invalid customer to update provided.");
+        }
         var result = await _customerService.UpdateCustomerAsync(updateForm);
 
         return result.StatusCode switch
@@ -87,6 +96,10 @@ public class CustomersController(ICustomerService customerService) : ControllerB
     [HttpDelete]
     public async Task<IActionResult> DeleteOneCustomer(Customer customerToDelete)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest("Invalid customer to delete provided.");
+        }
         var result = await _customerService.DeleteOneCustomerAsync(customerToDelete);
 
         return result.StatusCode switch

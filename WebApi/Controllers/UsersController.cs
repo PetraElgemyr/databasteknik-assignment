@@ -41,7 +41,7 @@ public class UsersController(IUserService userService) : ControllerBase
     {
         if (!ModelState.IsValid)
         {
-            return BadRequest();
+            return BadRequest("Invalid user provided.");
         }
 
         var result = await _userService.CreateUserAsync(form);
@@ -61,8 +61,9 @@ public class UsersController(IUserService userService) : ControllerBase
 
         if (!ModelState.IsValid)
         {
-            return BadRequest();
+            return BadRequest("Invalid user provided.");
         }
+
         var result = await _userService.UpdateUserAsync(form);
         return result.StatusCode switch
         {
@@ -96,7 +97,7 @@ public class UsersController(IUserService userService) : ControllerBase
 
         if (!ModelState.IsValid)
         {
-            return BadRequest();
+            return BadRequest("Invalid user to delete provided.");
         }
         var result = await _userService.DeleteUserAsync(form);
 

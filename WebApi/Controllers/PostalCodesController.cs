@@ -16,7 +16,7 @@ public class PostalCodesController(IPostalCodeService postalCodeService) : Contr
     {
         if (!ModelState.IsValid)
         {
-            return BadRequest();
+            return BadRequest("Invalid postal code provided.");
         }
 
         var result = await _postalCodeService.CreatePostalCodeAsync(postalCodeForm);
