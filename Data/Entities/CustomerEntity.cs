@@ -10,7 +10,8 @@ public class CustomerEntity
     public int Id { get; set; }
     [Column(TypeName = "nvarchar(100)")]
     public string CustomerName { get; set; } = null!;
-    public int CustomerTypeId { get; set; } 
+    [ForeignKey("CustomerType")] 
+    public int CustomerTypeId { get; set; }
     public CustomerTypeEntity CustomerType { get; set; } = null!;
     public ICollection<CustomerContactEntity> CustomerContacts { get; set; } = [];
 }

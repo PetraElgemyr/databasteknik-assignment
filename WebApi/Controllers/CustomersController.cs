@@ -49,6 +49,7 @@ public class CustomersController(ICustomerService customerService) : ControllerB
         {
             201 => Created("",result.Result),
             400 => BadRequest(result.Message),
+            404 => NotFound(result.Message),
             409 => Conflict(result.Message),
             _ => Problem(result.Message),
         };

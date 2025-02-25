@@ -90,6 +90,12 @@ public class ResponseResult<T> : ResponseResult
         StatusCode = 500,
         Message = message,
     };
+    public static ResponseResult<T> AlreadyExists(string? message = default) => new()
+    {
+        Success = false,
+        StatusCode = 409,
+        Message = message
+    };
 
 
 }

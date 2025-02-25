@@ -1,8 +1,9 @@
-﻿using Business.Models.Roles;
+﻿using Business.Models;
+using Business.Models.Roles;
 
 namespace Business.Interfaces;
 
 public interface IRoleService
 {
-    Task<IEnumerable<Role>> GetAllRolesAsync();
+    Task<ResponseResult<IEnumerable<Role>>> GetAllRolesAsync();
 }

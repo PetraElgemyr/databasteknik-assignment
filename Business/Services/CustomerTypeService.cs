@@ -2,6 +2,7 @@
 using Business.Interfaces;
 using Business.Models;
 using Data.Interfaces;
+using System.Diagnostics;
 
 namespace Business.Services;
 
@@ -9,11 +10,18 @@ public class CustomerTypeService(ICustomerTypeRepository customerTypeRepository)
 {
     private readonly ICustomerTypeRepository _customerTypeRepository = customerTypeRepository;
 
-    public async Task<IEnumerable<CustomerType>> GetAllCustomerTypesAsync()
+    public async Task<ResponseResult<IEnumerable<CustomerType>>> GetAllCustomerTypesAsync()
     {
-        var entities = await _customerTypeRepository.GetAllAsync();
-        var types = entities.Select(CustomerTypeFactory.Create);
-        return types;
+        try
+        {
+            var entities = await _customerTypeRepository.GetAllAsync();
+            var types = entities.Select(CustomerTypeFactory.Create);
+            return ResponseResult<IEnumerable<CustomerType>>.Ok("",types);
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.Message);
+            return ResponseResult<IEnumerable<CustomerType>>.Error("An error occurd when fetching all customer types");
+        }
     }
-
 }

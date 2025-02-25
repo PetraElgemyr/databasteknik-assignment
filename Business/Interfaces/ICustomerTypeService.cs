@@ -4,5 +4,5 @@ namespace Business.Interfaces;
 
 public interface ICustomerTypeService
 {
-    Task<IEnumerable<CustomerType>> GetAllCustomerTypesAsync();
+    Task<ResponseResult<IEnumerable<CustomerType>>> GetAllCustomerTypesAsync();
 }

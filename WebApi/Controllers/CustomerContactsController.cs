@@ -9,7 +9,7 @@ public class CustomerContactsController(ICustomerContactService customerContactS
 {
     private readonly ICustomerContactService _customerContactService = customerContactService;
 
-    [HttpGet("{id}")]
+    [HttpGet("customer/{id}")]
     public async Task<IActionResult> GetCustomerContactsByCustomerId(int id)
     {
         var result = await _customerContactService.GetAllCustomerContactsByCustomerIdAsync(id);

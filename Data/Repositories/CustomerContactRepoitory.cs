@@ -9,14 +9,14 @@ namespace Data.Repositories;
 
 public class CustomerContactRepoitory(DataContext context) : BaseRepository<CustomerContactEntity>(context), ICustomerContactRepoitory
 {
-    public async Task<IEnumerable<CustomerContactEntity>> GetAllCustomerContactsByCustomerId(int id)
+    public async Task<IEnumerable<CustomerContactEntity>> GetAllCustomerContactsByCustomerId(int customerId)
     {
         try
         {
             var entities = await _context.CustomerContacts
                 .Include(x => x.Customer)
                 .Include(x => x.Customer.CustomerType)
-                .Where(x => x.CustomerId == id)
+                .Where(x => x.CustomerId == customerId)
                 .Select(x => new CustomerContactEntity
                 {
                     Id = x.Id,

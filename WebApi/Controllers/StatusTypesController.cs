@@ -13,8 +13,12 @@ public class StatusTypesController(IStatusTypeService statusTypeService) : Contr
     [HttpGet]
     public async Task<IActionResult> GetAllStatuses()
     {
-        var statuses = await _statusTypeService.GetAllListStatusesAsync();
-        return Ok(statuses);
+        var result = await _statusTypeService.GetAllListStatusesAsync();
+        return result.StatusCode switch
+        {
+            200 => Ok(result.Result),
+            _ => Problem(result.Message),
+        };
     }
 }
 

@@ -4,6 +4,7 @@ using Business.Models;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
+using System.Diagnostics;
 
 namespace Business.Services;
 
@@ -13,21 +14,22 @@ public class PostalCodeService(IPostalCodeRepository postalCodeRepository) : IPo
 
     public async Task<ResponseResult> CreatePostalCodeAsync(PostalCodeRegistrationForm form)
     {
-        var entity = PostalCodeFactory.CreatePostalCodeEntity(form);
-        
-        if(entity == null)
+        try
         {
-            return ResponseResult.InvalidModel("PostalCodeRegistrationForm was not properly provided");
+            var entity = PostalCodeFactory.CreatePostalCodeEntity(form);
+            if (entity == null)
+                return ResponseResult.InvalidModel("PostalCodeRegistrationForm was not properly provided");
+
+            var createdPostalCodeEntity = await _postalCodeRepository.AddAsync(entity);
+            if (createdPostalCodeEntity == null)
+                return ResponseResult.Failed("Could not create postal code.");
+
+            return ResponseResult.Succeeded("Postal code was successfully created.");
         }
-
-        var createdPostalCodeEntity = await _postalCodeRepository.AddAsync(entity);
-
-        if(createdPostalCodeEntity == null)
+        catch (Exception ex)
         {
-            return ResponseResult.Failed("Could not create postal code.");
+            Debug.WriteLine(ex.Message);
+            return ResponseResult.Failed("Something went wrong when trying to create postalcode");
         }
-
-        return ResponseResult.Succeeded("Postal code was successfully created.");
     }
-
 }

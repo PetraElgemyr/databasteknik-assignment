@@ -3,6 +3,7 @@ using Business.Interfaces;
 using Business.Models;
 using Business.Models.CustomerContacts;
 using Data.Interfaces;
+using System.Diagnostics;
 
 namespace Business.Services;
 
@@ -12,10 +13,17 @@ public class CustomerContactService(ICustomerContactRepoitory customerContactRep
 
     public async Task<ResponseResult<IEnumerable<CustomerContact>>> GetAllCustomerContactsByCustomerIdAsync(int customerId)
     {
-        var entities = await _customerContactRepository.GetAllCustomerContactsByCustomerId(customerId);
-        var customerContacts = entities.Select(CustomerContactFactory.CreateContactFromEntity);
+        try
+        {
+            var entities = await _customerContactRepository.GetAllCustomerContactsByCustomerId(customerId);
+            var customerContacts = entities.Select(CustomerContactFactory.CreateContactFromEntity);
 
-        return ResponseResult<IEnumerable<CustomerContact>>.Ok("All contacts for the current customer", customerContacts);
+            return ResponseResult<IEnumerable<CustomerContact>>.Ok("All contacts for the current customer", customerContacts);
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.Message);
+            return ResponseResult<IEnumerable<CustomerContact>>.Error($"An error occured when trying to fetch customer contacts with customerId {customerId}");
+        }
     }
-
 }

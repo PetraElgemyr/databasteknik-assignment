@@ -51,7 +51,7 @@ namespace Data.Migrations
 
                     b.HasIndex("PostalCodeId");
 
-                    b.ToTable("CustomerAddresses");
+                    b.ToTable("CustomerAddresses", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.CustomerContactEntity", b =>
@@ -87,7 +87,7 @@ namespace Data.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.ToTable("CustomerContacts");
+                    b.ToTable("CustomerContacts", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.CustomerEntity", b =>
@@ -109,7 +109,7 @@ namespace Data.Migrations
 
                     b.HasIndex("CustomerTypeId");
 
-                    b.ToTable("Customers");
+                    b.ToTable("Customers", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.CustomerTypeEntity", b =>
@@ -126,7 +126,7 @@ namespace Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("CustomerTypes");
+                    b.ToTable("CustomerTypes", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.PostalCodeEntity", b =>
@@ -140,7 +140,7 @@ namespace Data.Migrations
 
                     b.HasKey("PostalCode");
 
-                    b.ToTable("PostalCodes");
+                    b.ToTable("PostalCodes", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.ProjectDocumentEntity", b =>
@@ -177,7 +177,7 @@ namespace Data.Migrations
 
                     b.HasIndex("ProjectId");
 
-                    b.ToTable("ProjectDocuments");
+                    b.ToTable("ProjectDocuments", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.ProjectEntity", b =>
@@ -222,7 +222,7 @@ namespace Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Projects");
+                    b.ToTable("Projects", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.ProjectExpenseEntity", b =>
@@ -253,7 +253,7 @@ namespace Data.Migrations
 
                     b.HasIndex("ProjectId");
 
-                    b.ToTable("ProjectExpenses");
+                    b.ToTable("ProjectExpenses", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.ProjectLogEntity", b =>
@@ -282,7 +282,7 @@ namespace Data.Migrations
 
                     b.HasIndex("ProjectId");
 
-                    b.ToTable("ProjectLogs");
+                    b.ToTable("ProjectLogs", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.ProjectScheduleEntity", b =>
@@ -301,7 +301,7 @@ namespace Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ProjectSchedules");
+                    b.ToTable("ProjectSchedules", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.ProjectServiceEntity", b =>
@@ -319,7 +319,7 @@ namespace Data.Migrations
 
                     b.HasIndex("ServiceId");
 
-                    b.ToTable("ProjectServices");
+                    b.ToTable("ProjectServices", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.RoleEntity", b =>
@@ -339,7 +339,7 @@ namespace Data.Migrations
                     b.HasIndex("RoleName")
                         .IsUnique();
 
-                    b.ToTable("Roles");
+                    b.ToTable("Roles", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.ServiceEntity", b =>
@@ -359,7 +359,7 @@ namespace Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Services");
+                    b.ToTable("Services", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.StatusTypeEntity", b =>
@@ -379,7 +379,7 @@ namespace Data.Migrations
                     b.HasIndex("StatusTypeName")
                         .IsUnique();
 
-                    b.ToTable("StatusTypes");
+                    b.ToTable("StatusTypes", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.UserEntity", b =>
@@ -415,7 +415,7 @@ namespace Data.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("Data.Entities.CustomerAddressEntity", b =>

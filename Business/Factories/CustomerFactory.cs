@@ -21,6 +21,7 @@ public static class CustomerFactory
         {
             Id = entity.Id,
             CustomerName = entity.CustomerName,
+            //CustomerTypeId = entity.CustomerType.Id,
             CustomerType = new CustomerType
             {
                 Id = entity.CustomerType.Id,
@@ -35,7 +36,27 @@ public static class CustomerFactory
         {
             Id = customer.Id,
             CustomerName = customer.CustomerName,
-            CustomerTypeId = customer.CustomerType.Id
+            CustomerTypeId = customer.CustomerType.Id,
+            CustomerType = new CustomerTypeEntity
+            {
+                Id = customer.CustomerType.Id,
+                CustomerTypeName = customer.CustomerType.CustomerTypeName
+            }
+        };
+    }
+
+    public static CustomerEntity CreateCustomerEntityFromUpdateForm(CustomerUpdateForm form)
+    {
+        return new CustomerEntity
+        {
+            Id = form.Id,
+            CustomerName = form.CustomerName,
+            CustomerTypeId = form.CustomerType.Id,
+            CustomerType = new CustomerTypeEntity
+            {
+                Id = form.CustomerType.Id,
+                CustomerTypeName = form.CustomerType.CustomerTypeName
+            }
         };
     }
 

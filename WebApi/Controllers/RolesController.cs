@@ -12,7 +12,11 @@ public class RolesController(IRoleService roleService) : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAllRoles()
     {
-        var roles = await _roleService.GetAllRolesAsync();
-        return Ok(roles);
+        var result = await _roleService.GetAllRolesAsync();
+         return result.StatusCode switch
+        {
+            200 => Ok(result.Result),
+            _ => Problem(result.Message),
+        };
     }
 }

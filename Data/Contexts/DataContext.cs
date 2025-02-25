@@ -72,10 +72,5 @@ public class DataContext : DbContext
            .WithOne()
            .HasForeignKey<ProjectEntity>(p => p.ProjectScheduleId)
            .OnDelete(DeleteBehavior.Cascade);
-
     }
-
-
-
-
 }

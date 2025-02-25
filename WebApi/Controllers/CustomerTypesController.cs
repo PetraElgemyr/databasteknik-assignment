@@ -13,8 +13,12 @@ namespace WebApi.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllCustomerTypes()
         {
-            var types = await _customerTypeService.GetAllCustomerTypesAsync();
-            return Ok(types);
+            var result = await _customerTypeService.GetAllCustomerTypesAsync();
+            return result.StatusCode switch
+            {
+                200 => Ok(result.Result),
+                _ => Problem(result.Message),
+            };
         }
     }
 }

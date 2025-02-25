@@ -19,7 +19,6 @@ public class UsersController(IUserService userService) : ControllerBase
         return result.StatusCode switch
         {
             200 => Ok(result.Result),
-            404 => NotFound(result.Message),
             _ => Problem(result.Message),
         };
     }
@@ -28,8 +27,12 @@ public class UsersController(IUserService userService) : ControllerBase
     [Route("projectmanagers")]
     public async Task<IActionResult> GetAllProjectManagers()
     {
-        var entities = await _userService.GetAllProjectManagersAsync();
-        return Ok(entities);
+        var result = await _userService.GetAllProjectManagersAsync();
+        return result.StatusCode switch
+        {
+            200 => Ok(result.Result),
+            _ => Problem(result.Message),
+        };
     }
 
 
@@ -46,6 +49,7 @@ public class UsersController(IUserService userService) : ControllerBase
         {
             201 => Created("", result.Result),
             400 => BadRequest(result.Message),
+            404 => NotFound(result.Message),
             409 => Conflict(result.Message),
             _ => Problem(result.Message),
         };
@@ -64,6 +68,7 @@ public class UsersController(IUserService userService) : ControllerBase
         {
             201 => Created("", result.Result),
             400 => BadRequest(result.Message),
+            404 => NotFound(result.Message),
             409 => Conflict(result.Message),
             _ => Problem(result.Message),
         };
@@ -97,7 +102,6 @@ public class UsersController(IUserService userService) : ControllerBase
 
         return result.StatusCode switch
         {
-
             204 => NoContent(), // lyckad borttaning kod 204, ist för 200
             400 => BadRequest(result.Message),
             404 => NotFound(result.Message),
