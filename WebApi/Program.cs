@@ -31,7 +31,6 @@ builder.Services.AddScoped<IProjectRepository, ProjectRepository>();
 builder.Services.AddScoped<IProjectService, ProjectService>();
 
 builder.Services.AddScoped<IProjectScheduleRepository, ProjectScheduleRepository>();
-//builder.Services.AddScoped<I, ProjectScheduleService>();
 
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IRoleService, RoleService>();
