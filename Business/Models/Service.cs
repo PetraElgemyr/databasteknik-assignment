@@ -8,4 +8,3 @@ public class Service
     public string ServiceType { get; set; } = null!;
     public decimal HourlyCost { get; set; }
 }
-

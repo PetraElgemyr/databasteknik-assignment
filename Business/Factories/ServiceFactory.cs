@@ -17,4 +17,13 @@ public static class ServiceFactory
         };
     }
 
+    public static ServiceEntity CreateServiceEntityFromForm(ServiceRegistration form)
+    {
+        return new ServiceEntity
+        {
+            ServiceTypeName = form.ServiceType,
+            HourlyCost = form.HourlyCost
+        };
+    }
+
 }
