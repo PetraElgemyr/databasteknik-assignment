@@ -1,17 +1,15 @@
 import Button from "@mui/material/Button";
 import { ProjectsDataGrid } from "../ProjectsDataGrid";
 import Stack from "@mui/material/Stack";
-import { useState } from "react";
-import { defaultProject, Project } from "../../models/Project";
+import { useAppContext } from "../hooks/useAppContext";
+import { Typography } from "@mui/material";
 
 export const HomePage = () => {
-  // in i appcontext.
-  const [selectedProject, setSelectedProject] =
-    useState<Project>(defaultProject);
+  const { selectedProject } = useAppContext();
 
   return (
     <>
-      <h1>Alla projekt</h1>
+      <Typography variant="h3">Alla projekt</Typography>
       <Stack spacing={3} direction="row" justifyContent={"end"}>
         <Button
           variant="outlined"

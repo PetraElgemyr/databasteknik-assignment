@@ -1,7 +1,24 @@
+import { DateTime } from "ts-luxon";
+import { ProjectSchedule } from "./ProjectSchedule";
+
 export class Project {
   constructor(
-    public id: number // public user: User // public numberOfGuests: number, //  // public date: string, // public bookedTables: number, // public sitting: number, // public bookingId: string,
+    public projectName: string,
+    public description: string,
+    public totalCost: number,
+    public customerId: number,
+    public statusTypeId: number,
+    public userId: number,
+    public projectSchedule: ProjectSchedule
   ) {}
 }
 
-export const defaultProject = new Project(0);
+export const newProject = new Project(
+  "",
+  "",
+  0,
+  0,
+  0,
+  0,
+  new ProjectSchedule(DateTime.now())
+);

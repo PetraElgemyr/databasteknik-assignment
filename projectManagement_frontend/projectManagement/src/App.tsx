@@ -3,10 +3,19 @@ import "./App.css";
 import { AppContext } from "./components/contexts/AppContext";
 import { Routing } from "./Routing";
 import { getAllProjects } from "./services/projectServices";
-import { IProject } from "./interfaces/IProject";
+import { IListProject } from "./interfaces/IListProject";
+import { newProject, Project } from "./models/Project";
+import {
+  emptyIProjectWithDetails,
+  IProjectWithDetails,
+} from "./interfaces/IProjectWithDetails";
 
 function App() {
-  const [projects, setProjects] = useState<IProject[]>([]);
+  const [projects, setProjects] = useState<IListProject[]>([]);
+  const [selectedProject, setSelectedProject] = useState<IProjectWithDetails>(
+    emptyIProjectWithDetails
+  );
+  const [currentProject, setCurrentProject] = useState<Project>(newProject);
 
   const loadProjects = async () => {
     const response = await getAllProjects();
@@ -20,6 +29,10 @@ function App() {
   const contextValue = {
     projects,
     setProjects,
+    selectedProject,
+    setSelectedProject,
+    currentProject,
+    setCurrentProject,
   };
 
   return (
