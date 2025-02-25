@@ -1,8 +1,7 @@
 export class Project {
-  constructor() // public date: string, // public bookedTables: number, // public sitting: number, // public bookingId: string,
-  // public numberOfGuests: number,
-  // public user: User
-  {}
+  constructor(
+    public id: number // public user: User // public numberOfGuests: number, //  // public date: string, // public bookedTables: number, // public sitting: number, // public bookingId: string,
+  ) {}
 }
 
-export const defaultBooking = new Project();
+export const defaultProject = new Project(0);

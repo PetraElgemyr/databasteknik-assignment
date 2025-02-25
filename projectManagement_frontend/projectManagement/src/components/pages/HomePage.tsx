@@ -1,27 +1,39 @@
-import { useEffect, useState } from "react";
-import { getAllProjects } from "../../services/projectServices";
-import { IProject } from "../../interfaces/IProject";
+import Button from "@mui/material/Button";
+import { ProjectsDataGrid } from "../ProjectsDataGrid";
+import Stack from "@mui/material/Stack";
+import { useState } from "react";
+import { defaultProject, Project } from "../../models/Project";
 
 export const HomePage = () => {
-  const [projects, setProjects] = useState<IProject[]>([]);
+  // in i appcontext.
+  const [selectedProject, setSelectedProject] =
+    useState<Project>(defaultProject);
 
-  const loadProjects = async () => {
-    const response = await getAllProjects();
-    setProjects(response);
-  };
-
-  useEffect(() => {
-    loadProjects();
-  }, []);
   return (
     <>
-      {projects.map((p) => (
-        <div key={p.id}>
-          <p>
-            Id: {p.id} - {p.projectName}
-          </p>
-        </div>
-      ))}
+      <h1>Alla projekt</h1>
+      <Stack spacing={3} direction="row" justifyContent={"end"}>
+        <Button
+          variant="outlined"
+          size="large"
+          disabled={selectedProject.id === 0}
+          onClick={() => {
+            //delete request med selectedProject.id
+          }}
+        >
+          Ta bort projekt
+        </Button>
+        <Button
+          variant="contained"
+          size="large"
+          onClick={() => {
+            //öppna create Project page med form
+          }}
+        >
+          Skapa projekt
+        </Button>
+      </Stack>
+      <ProjectsDataGrid />
     </>
   );
 };
