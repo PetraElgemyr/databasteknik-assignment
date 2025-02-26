@@ -3,9 +3,11 @@ import { ProjectsDataGrid } from "../ProjectsDataGrid";
 import Stack from "@mui/material/Stack";
 import { useAppContext } from "../hooks/useAppContext";
 import { Typography } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 export const HomePage = () => {
   const { selectedProject } = useAppContext();
+  const navigate = useNavigate();
 
   return (
     <>
@@ -25,6 +27,7 @@ export const HomePage = () => {
           variant="contained"
           size="large"
           onClick={() => {
+            navigate("/projects/new");
             //öppna create Project page med form
           }}
         >

@@ -9,7 +9,8 @@ export class Project {
     public customerId: number,
     public statusTypeId: number,
     public userId: number,
-    public projectSchedule: ProjectSchedule
+    public projectSchedule: ProjectSchedule,
+    public id?: number
   ) {}
 }
 
