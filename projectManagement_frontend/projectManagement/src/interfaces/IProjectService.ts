@@ -1,11 +1,17 @@
+import { IService } from "./IService";
+
 export interface IProjectService {
   projectId: number;
   serviceId: number;
   service: IService;
 }
 
-export interface IService {
-  id: number;
-  serviceType: string;
-  hourlyCost: number;
-}
+export const emptyProjectService = {
+  projectId: 0,
+  serviceId: 0,
+  service: {
+    id: 0,
+    serviceType: "",
+    hourlyCost: 0,
+  },
+};

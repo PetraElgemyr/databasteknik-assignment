@@ -1,4 +1,4 @@
-import { Box, Paper, Stack, Typography } from "@mui/material";
+import { Box, Button, Paper, Stack, Typography } from "@mui/material";
 import { IProjectWithDetails } from "../interfaces/IProjectWithDetails";
 import { formatDateHelper } from "./helpers/dateHelper";
 import { DataGrid } from "@mui/x-data-grid/DataGrid";
@@ -6,6 +6,7 @@ import { IProjectService } from "../interfaces/IProjectService";
 import { useCallback, useEffect, useState } from "react";
 import { getAllProjectServicesByProjectId } from "../services/projectServicesServices";
 import { GridColDef } from "@mui/x-data-grid";
+import { ProjectServiceForm } from "./ProjectServiceForm";
 
 interface IProjectViewProps {
   project: IProjectWithDetails;
@@ -13,6 +14,8 @@ interface IProjectViewProps {
 
 export const ProjectView = ({ project }: IProjectViewProps) => {
   const [services, setServices] = useState<IProjectService[]>([]);
+  const [isEditProjectServicesMode, setIsEditProjectServicesMode] =
+    useState(false);
 
   const columns: GridColDef[] = [
     { field: "projectId", headerName: "Projektnummer", width: 150 },
@@ -65,7 +68,12 @@ export const ProjectView = ({ project }: IProjectViewProps) => {
             Beskrivning {project.description}
           </Typography>
         </Box>
-        <Stack spacing={3} direction="row" width={"100%"}>
+        <Stack
+          spacing={3}
+          direction="row"
+          width={"100%"}
+          justifyContent={"space-between"}
+        >
           <Stack width={"50%"}>
             <Paper>
               <Box padding={3}>
@@ -104,6 +112,7 @@ export const ProjectView = ({ project }: IProjectViewProps) => {
           </Stack>
         </Stack>
         <Box>
+          {" "}
           <Typography variant="h6" gutterBottom>
             Projektets tjänster
           </Typography>
@@ -114,6 +123,29 @@ export const ProjectView = ({ project }: IProjectViewProps) => {
             columns={columns}
             pageSizeOptions={[5]}
           />
+          {!isEditProjectServicesMode ? (
+            <>
+              {" "}
+              <Button
+                onClick={() => {
+                  setIsEditProjectServicesMode(true);
+                }}
+              >
+                Redigera projektets tjänster
+              </Button>
+            </>
+          ) : (
+            <>
+              <ProjectServiceForm />
+              <Button
+                onClick={() => {
+                  setIsEditProjectServicesMode(false);
+                }}
+              >
+                Avbryt
+              </Button>{" "}
+            </>
+          )}
         </Box>
       </Box>
     </>
