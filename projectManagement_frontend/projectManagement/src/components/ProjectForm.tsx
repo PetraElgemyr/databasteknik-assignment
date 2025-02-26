@@ -20,16 +20,29 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs, { Dayjs } from "dayjs";
-import { DateTime } from "ts-luxon";
-import { createNewProject } from "../services/projectServices";
+import {
+  createNewProject,
+  updateExistingProject,
+} from "../services/projectServices";
+import { IProjectWithDetails } from "../interfaces/IProjectWithDetails";
+import { useNavigate } from "react-router-dom";
 
 interface IProjectFormProps {
-  submitted: boolean;
-  setSubmitted: (s: boolean) => void;
+  fetchedProject: IProjectWithDetails;
+  isEditMode: boolean;
+  setIsEditMode: (isEditMode: boolean) => void;
+  fetchProjectByParamsId: () => void;
 }
 
-export const ProjectForm = ({ submitted, setSubmitted }: IProjectFormProps) => {
+export const ProjectForm = ({
+  fetchedProject,
+  isEditMode,
+  setIsEditMode,
+  fetchProjectByParamsId,
+}: IProjectFormProps) => {
+  const [submitted, setSubmitted] = useState<boolean>(false);
   const { currentProject, setCurrentProject } = useAppContext();
+  const navigate = useNavigate();
 
   const [customers, setCustomers] = useState<ICustomer[]>([]);
   const [openCustomers, setOpenCustomers] = useState(false);
@@ -45,14 +58,31 @@ export const ProjectForm = ({ submitted, setSubmitted }: IProjectFormProps) => {
   );
 
   const postNewProject = async () => {
-    const createdResponse = await createNewProject(currentProject);
-    console.log(createdResponse);
+    const createdProject = await createNewProject(currentProject);
+    if (createdProject) {
+      setIsEditMode(false);
+      navigate(`/projects/${createdProject.id}`);
+    }
+  };
+
+  const updateProjectRequest = async () => {
+    const updatedProject = await updateExistingProject(currentProject);
+
+    if (updatedProject) {
+      setIsEditMode(false);
+      fetchProjectByParamsId();
+    }
   };
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSubmitted(true);
-    postNewProject();
+
+    if (isEditMode && fetchedProject.id > 0) {
+      updateProjectRequest();
+    } else if (!currentProject.id && !isEditMode) {
+      postNewProject();
+    }
   };
 
   const handleOpenCustomers = async () => {
@@ -88,15 +118,15 @@ export const ProjectForm = ({ submitted, setSubmitted }: IProjectFormProps) => {
 
   const handleStartDateChange = (newValue: Dayjs | null, dateName: string) => {
     if (newValue) {
-      const luxonDate = DateTime.fromJSDate(newValue.toDate());
-      console.log("Luxon DateTime:", luxonDate.toLocaleString());
+      // const luxonDate = DateTime.fromJSDate(newValue.toDate());
+      const newDate = newValue.toDate();
 
       if (dateName === "startDate") {
         setCurrentProject({
           ...currentProject,
           projectSchedule: {
             ...currentProject.projectSchedule,
-            startDate: luxonDate,
+            startDate: newDate,
           },
         });
       }
@@ -105,7 +135,7 @@ export const ProjectForm = ({ submitted, setSubmitted }: IProjectFormProps) => {
           ...currentProject,
           projectSchedule: {
             ...currentProject.projectSchedule,
-            endDate: luxonDate,
+            endDate: newDate,
           },
         });
       }
@@ -158,6 +188,7 @@ export const ProjectForm = ({ submitted, setSubmitted }: IProjectFormProps) => {
             <Autocomplete
               fullWidth
               open={openCustomers}
+              loading={loadingCustomers}
               onOpen={handleOpenCustomers}
               onClose={handleCloseCustomer}
               getOptionLabel={(c: ICustomer) => c.customerName}
@@ -165,7 +196,6 @@ export const ProjectForm = ({ submitted, setSubmitted }: IProjectFormProps) => {
                 c.customerName === value.customerName
               }
               options={customers}
-              loading={loadingCustomers}
               renderOption={(props, option, state) => {
                 return (
                   <ListItem {...props} key={state.index}>
@@ -297,10 +327,10 @@ export const ProjectForm = ({ submitted, setSubmitted }: IProjectFormProps) => {
               disableClearable
               onChange={(event, value) => {
                 if (event && value) {
-                  setChoosenStatus(value); // Spara hela objektet
+                  setChoosenStatus(value);
                   setCurrentProject({
                     ...currentProject,
-                    statusTypeId: value.id, // Spara endast ID i currentProject
+                    statusTypeId: value.id,
                   });
                 }
               }}
@@ -309,10 +339,9 @@ export const ProjectForm = ({ submitted, setSubmitted }: IProjectFormProps) => {
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <Stack width={"40%"}>
               <DatePicker
-                minDate={dayjs()}
                 label="Startdatum"
                 value={dayjs(
-                  currentProject.projectSchedule.startDate.toJSDate()
+                  currentProject.projectSchedule.startDate.toString()
                 )}
                 onChange={(newValue) =>
                   handleStartDateChange(newValue, "startDate")
@@ -323,10 +352,10 @@ export const ProjectForm = ({ submitted, setSubmitted }: IProjectFormProps) => {
               <DatePicker
                 label="Slutdatum"
                 minDate={dayjs(
-                  currentProject.projectSchedule.startDate?.toJSDate()
+                  currentProject.projectSchedule.startDate?.toString()
                 )}
                 value={dayjs(
-                  currentProject.projectSchedule.endDate?.toJSDate()
+                  currentProject.projectSchedule.endDate?.toString()
                 )}
                 onChange={(newValue) =>
                   handleStartDateChange(newValue, "endDate")
@@ -358,7 +387,7 @@ export const ProjectForm = ({ submitted, setSubmitted }: IProjectFormProps) => {
         </Stack>
         <Stack direction={"row"} width={"100%"} justifyContent={"flex-end"}>
           <Button variant="contained" size="large" type="submit">
-            Skapa projekt
+            {isEditMode ? "Spara" : "Lägg till"}
           </Button>
         </Stack>
       </Box>

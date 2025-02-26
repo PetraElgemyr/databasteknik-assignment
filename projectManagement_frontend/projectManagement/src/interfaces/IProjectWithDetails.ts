@@ -1,5 +1,5 @@
 import { IUser } from "./IUser";
-import { IProductSchedule } from "./IProductSchedule";
+import { IProjectSchedule } from "./IProjectSchedule";
 import { ICustomer } from "./ICustomer";
 import { IStatusType } from "./IStatusType";
 import { DateTime } from "ts-luxon";
@@ -9,7 +9,7 @@ export interface IProjectWithDetails {
   projectName: string;
   description: string;
   totalCost: number;
-  productSchedule: IProductSchedule;
+  projectSchedule: IProjectSchedule;
   customer: ICustomer;
   statusType: IStatusType;
   user: IUser;
@@ -20,9 +20,9 @@ export const emptyIProjectWithDetails: IProjectWithDetails = {
   projectName: "",
   description: "",
   totalCost: 0,
-  productSchedule: {
+  projectSchedule: {
     id: 0,
-    startDate: DateTime.now(),
+    startDate: DateTime.now().toJSDate(),
   },
   customer: {
     id: 0,

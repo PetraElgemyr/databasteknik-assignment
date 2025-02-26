@@ -21,5 +21,5 @@ export const newProject = new Project(
   0,
   0,
   0,
-  new ProjectSchedule(DateTime.now())
+  new ProjectSchedule(DateTime.now().toJSDate())
 );
