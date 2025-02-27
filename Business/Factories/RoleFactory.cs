@@ -5,12 +5,10 @@ namespace Business.Factories;
 
 public static class RoleFactory
 {
-    public static Role Create(RoleEntity entity)
+    public static Role? Create(RoleEntity entity) => entity == null ? null : new Role
     {
-        return new Role
-        {
-            Id = entity.Id,
-            RoleName = entity.RoleName
-        };
-    }
+        Id = entity.Id,
+        RoleName = entity.RoleName
+    };
+
 }

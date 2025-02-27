@@ -15,7 +15,7 @@ public class CustomerTypeService(ICustomerTypeRepository customerTypeRepository)
         try
         {
             var entities = await _customerTypeRepository.GetAllAsync();
-            var types = entities.Select(CustomerTypeFactory.Create);
+            var types = entities.Select(CustomerTypeFactory.CreateCustomerTypeFromEntity);
             return ResponseResult<IEnumerable<CustomerType>>.Ok("",types);
         }
         catch (Exception ex)

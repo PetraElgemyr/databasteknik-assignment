@@ -2,58 +2,107 @@
 using Business.Models.Roles;
 using Business.Models.Users;
 using Data.Entities;
+using System.Diagnostics;
 
 namespace Business.Factories;
 
 public static class UserFactory
 {
-    public static UserEntity CreateUserEntityFromRegistrationForm(UserRegistrationForm form)
+    public static UserEntity? CreateUserEntityFromRegistrationForm(UserRegistrationForm form)
     {
-        return new UserEntity
+        try
         {
-            FirstName = form.FirstName,
-            LastName = form.LastName,
-            Email = form.Email,
-            PhoneNumber = form.PhoneNumber,
-            RoleId = form.RoleId
-        };
+            ArgumentNullException.ThrowIfNull(form);
+
+            var userEntity = new UserEntity
+            {
+                FirstName = form.FirstName,
+                LastName = form.LastName,
+                Email = form.Email,
+                PhoneNumber = form.PhoneNumber,
+                RoleId = form.RoleId
+            };
+            return userEntity;
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.Message);
+            return null;
+        }
     }
 
-    public static UserEntity CreateUserEntityFromUser(User user)
+    public static UserEntity? CreateUserEntityFromUser(User user)
     {
-        return new UserEntity
+        try
         {
-            Id = user.Id,   
-            FirstName = user.FirstName,
-            LastName = user.LastName,
-            Email = user.Email,
-            PhoneNumber = user.PhoneNumber,
-            RoleId = user.RoleId
-        };
+            ArgumentNullException.ThrowIfNull(user);
+
+            var userEntity = new UserEntity
+            {
+                Id = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
+                RoleId = user.RoleId
+            };
+            return userEntity;
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.Message);
+            return null;
+        }
+
     }
 
-    public static ListUser CreateListUserFromEntity(UserEntity entity)
+    public static ListUser? CreateListUserFromEntity(UserEntity entity)
     {
-        return new ListUser
+        try
         {
-            Id = entity.Id,
-            FirstName = entity.FirstName,
-            LastName = entity.LastName,
-            Role = new UserRole {  RoleName = entity.Role.RoleName }
-        };
+            ArgumentNullException.ThrowIfNull(entity);
+            var user = new ListUser
+            {
+                Id = entity.Id,
+                FirstName = entity.FirstName,
+                LastName = entity.LastName,
+                Role = new UserRole { RoleName = entity.Role.RoleName }
+            };
+            return user;
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.Message);
+            return null;
+        }
+
+
     }
 
-    public static User CreateUserFromEntity(UserEntity entity)
+    public static User? CreateUserFromEntity(UserEntity entity)
     {
-        return new User
+
+        try
         {
-            Id = entity.Id,
-            FirstName = entity.FirstName,
-            LastName = entity.LastName,
-            Email = entity.Email,
-            PhoneNumber = entity.PhoneNumber,
-            RoleId = entity.RoleId
-        };
+            ArgumentNullException.ThrowIfNull(entity);
+            var user = new User
+            {
+                Id = entity.Id,
+                FirstName = entity.FirstName,
+                LastName = entity.LastName,
+                Email = entity.Email,
+                PhoneNumber = entity.PhoneNumber,
+                RoleId = entity.RoleId
+            };
+            return user;
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.Message);
+            return null;
+        }
+
+
     }
 }
 

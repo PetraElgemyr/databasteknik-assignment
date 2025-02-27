@@ -7,25 +7,20 @@ namespace Business.Factories;
 public static class ServiceFactory
 {
 
-    public static Service CreateServiceFromEntity(ServiceEntity entity)
+    public static Service? CreateServiceFromEntity(ServiceEntity entity) => entity == null ? null : new Service
     {
-        return new Service
-        {
-            Id = entity.Id,
-            ServiceType = entity.ServiceTypeName,
-            ServiceName = entity.ServiceName,
-            HourlyCost = entity.HourlyCost
-        };
-    }
+        Id = entity.Id,
+        ServiceType = entity.ServiceTypeName,
+        ServiceName = entity.ServiceName,
+        HourlyCost = entity.HourlyCost
+    };
 
-    public static ServiceEntity CreateServiceEntityFromForm(ServiceRegistration form)
+
+    public static ServiceEntity? CreateServiceEntityFromForm(ServiceRegistration form) => form == null ? null : new ServiceEntity
     {
-        return new ServiceEntity
-        {
-            ServiceTypeName = form.ServiceType,
-            ServiceName = form.ServiceName,
-            HourlyCost = form.HourlyCost
-        };
-    }
+        ServiceTypeName = form.ServiceType,
+        ServiceName = form.ServiceName,
+        HourlyCost = form.HourlyCost
+    };
 
 }

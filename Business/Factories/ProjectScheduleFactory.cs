@@ -7,32 +7,23 @@ namespace Business.Factories;
 public static class ProjectScheduleFactory
 {
 
-    public static ProjectScheduleEntity CreateEntityFromRegistrationForm(ProjectSchedule schedule)
+    public static ProjectScheduleEntity? CreateEntityFromRegistrationForm(ProjectSchedule schedule) => schedule == null ? null : new ProjectScheduleEntity
     {
-        return new ProjectScheduleEntity
-        {
-            StartDate = schedule.StartDate,
-            EndDate = schedule.EndDate,
-        };
-    }
+        StartDate = schedule.StartDate,
+        EndDate = schedule.EndDate,
+    };
 
-    public static ProjectScheduleEntity CreateEntityFromUpdateFormWithId(ProjectSchedule schedule)
+    public static ProjectScheduleEntity? CreateEntityFromUpdateFormWithId(ProjectSchedule schedule) => schedule == null ? null : new ProjectScheduleEntity
     {
-        return new ProjectScheduleEntity
-        {
-            Id = schedule.Id,
-            StartDate = schedule.StartDate,
-            EndDate = schedule.EndDate,
-        };
-    }
+        Id = schedule.Id,
+        StartDate = schedule.StartDate,
+        EndDate = schedule.EndDate,
+    };
 
-    public static ProjectSchedule CreateScheduleFromEntity(ProjectScheduleEntity entity)
+    public static ProjectSchedule? CreateScheduleFromEntity(ProjectScheduleEntity entity) => entity == null ? null : new ProjectSchedule
     {
-        return new ProjectSchedule
-        {
-            Id = entity.Id,
-            StartDate = entity.StartDate,
-            EndDate = entity.EndDate,
-        };
-    }
+        Id = entity.Id,
+        StartDate = entity.StartDate,
+        EndDate = entity.EndDate,
+    };
 }
