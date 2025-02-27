@@ -26,19 +26,19 @@ public class ProjectService(IProjectRepository projectRepository,
     private readonly IUserRepository _userRepository = userRepository;
     private readonly IProjectServiceRepository _projectServiceRepository = projectServiceRepository;
 
-    public async Task<ResponseResult<IEnumerable<ListProject>?>> GetAllProjectsAsync()
+    public async Task<ResponseResult<IEnumerable<ListProject?>>> GetAllProjectsAsync()
     {
         try
         {
             var entities = await _projectRepository.GetAllAsync();
             var listProjects = entities.Select(ProjectFactory.CreateListProjectFromEntity);
 
-            return ResponseResult<IEnumerable<ListProject>?>.Ok("All projects fetched successfully!", listProjects);
+            return ResponseResult<IEnumerable<ListProject?>>.Ok("All projects fetched successfully!", listProjects);
         }
         catch (Exception ex)
         {
             Debug.WriteLine(ex.Message);
-            return ResponseResult<IEnumerable<ListProject>?>.Error($"Something went wrong when trying to fetch all projects. {ex.Message}");
+            return ResponseResult<IEnumerable<ListProject?>>.Error($"Something went wrong when trying to fetch all projects. {ex.Message}");
         }
     }
     public async Task<ResponseResult<ProjectWithDetails?>> GetOneProjectByIdAsync(int projectId)
@@ -60,24 +60,23 @@ public class ProjectService(IProjectRepository projectRepository,
         }
     }
 
-    public async Task<ResponseResult<IEnumerable<ListProject>?>> GetAllProjectsByCustomerIdAsync(int customerId)
+    public async Task<ResponseResult<IEnumerable<ListProject?>>> GetAllProjectsByCustomerIdAsync(int customerId)
     {
         try
         {
             var customer = await _customerRepository.GetAsync(c => c.Id == customerId);
             if (customer == null)
-                return ResponseResult<IEnumerable<ListProject>?>.NotFound($"No customer with id: {customerId} exists.");
+                return ResponseResult<IEnumerable<ListProject?>>.NotFound($"No customer with id: {customerId} exists.");
 
             var entities = await _projectRepository.GetAllProjectByCustomerIdAsync(customerId);
             var listProjectsForCustomer = entities!.Select(ProjectFactory.CreateListProjectFromEntity);
-
-
-            return ResponseResult<IEnumerable<ListProject>?>.Ok($"All projects for customer with id: {customerId} successfully fetched.", listProjectsForCustomer);
+          
+            return ResponseResult<IEnumerable<ListProject?>>.Ok($"All projects for customer with id: {customerId} successfully fetched.", listProjectsForCustomer);
         }
         catch (Exception ex)
         {
             Debug.WriteLine(ex.Message);
-            return ResponseResult<IEnumerable<ListProject>?>.Error($"Something went wrong when trying to fetch the projects for the customer with id: {customerId}. {ex.Message}");
+            return ResponseResult<IEnumerable<ListProject?>>.Error($"Something went wrong when trying to fetch the projects for the customer with id: {customerId}. {ex.Message}");
         }
     }
 
@@ -98,12 +97,17 @@ public class ProjectService(IProjectRepository projectRepository,
                 return ResponseResult<Project?>.BadRequest("No user with that id exists. Could not create project with invalid user.");
 
             var scheduleEntityToAdd = ProjectScheduleFactory.CreateEntityFromRegistrationForm(form.ProjectSchedule);
+            if (scheduleEntityToAdd == null)
+                return ResponseResult<Project?>.Error("Something went wrong when trying to create the schedule entity");
+            
             var createdScheduleWithId = await _projectScheduleRepository.AddAsync(scheduleEntityToAdd);
 
             if (createdScheduleWithId == null)
                 return ResponseResult<Project?>.Error("Something went wrong when trying to create the date schedule. Project could not be created");
 
             var projectEntityWithSchedule = ProjectFactory.CreateEntityFromRegistrationForm(form, createdScheduleWithId);
+            if (projectEntityWithSchedule == null)
+                return ResponseResult<Project?>.Error("Something went wrong when trying to create the project entity with schedule");
             var createdProjectEntityWithId = await _projectRepository.AddAsync(projectEntityWithSchedule);
 
             if (createdProjectEntityWithId == null)
@@ -141,17 +145,28 @@ public class ProjectService(IProjectRepository projectRepository,
                 return ResponseResult<Project?>.BadRequest("No user with that id exists. Could not update project with invalid user.");
 
             var scheduleEntityToUpdate = ProjectScheduleFactory.CreateEntityFromUpdateFormWithId(updateForm.ProjectSchedule);
+            
+            if (scheduleEntityToUpdate == null)
+                return ResponseResult<Project?>.Error("Something went wrong when trying create schedule entity");
+            
             var updatedScheduleEntity = await _projectScheduleRepository.UpdateAsync(scheduleEntityToUpdate);
 
             if (updatedScheduleEntity == null)
                 return ResponseResult<Project?>.Error("Something went wrong when trying to create the date schedule. Project could not be created");
 
             var projectEntityWithUpdatedSchedule = ProjectFactory.CreateEntityFromUpdateForm(updateForm, updatedScheduleEntity);
+
+            if (projectEntityWithUpdatedSchedule == null)
+                return ResponseResult<Project?>.Error("Something went wrong when trying create project entity with updated schedule");
+
             var updatedProjectEntity = await _projectRepository.UpdateAsync(projectEntityWithUpdatedSchedule);
 
             if (updatedProjectEntity == null)
             {
                 var oldScheduleEntity = ProjectScheduleFactory.CreateEntityFromUpdateFormWithId(updateForm.ProjectSchedule);
+                if (oldScheduleEntity == null)
+                    return ResponseResult<Project?>.Error("Something went wrong when trying to create the entity for the schedule");
+
                 await _projectScheduleRepository.UpdateAsync(oldScheduleEntity);
                 return ResponseResult<Project?>.Error("Something went wrong when trying to update the project. Schedule did not update.");
             }
