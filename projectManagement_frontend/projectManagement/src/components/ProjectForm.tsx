@@ -28,6 +28,8 @@ import {
 } from "../services/projectServices";
 import { IProjectWithDetails } from "../interfaces/IProjectWithDetails";
 import { useNavigate } from "react-router-dom";
+import "dayjs/locale/sv";
+dayjs.locale("sv");
 
 interface IProjectFormProps {
   fetchedProject: IProjectWithDetails;
@@ -129,6 +131,7 @@ export const ProjectForm = ({
     if (newValue) {
       // const luxonDate = DateTime.fromJSDate(newValue.toDate());
       const newDate = newValue.toDate();
+
       if (dateName === "startDate") {
         setCurrentProject({
           ...currentProject,
@@ -407,9 +410,10 @@ export const ProjectForm = ({
               }}
             />
           </Stack>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="sv">
             <Stack width={"40%"}>
               <DatePicker
+                format="YYYY-MM-DD"
                 label="Startdatum"
                 value={dayjs(
                   currentProject.projectSchedule.startDate.toString()
