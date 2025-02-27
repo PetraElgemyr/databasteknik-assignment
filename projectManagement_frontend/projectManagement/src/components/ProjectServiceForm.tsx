@@ -51,7 +51,6 @@ export const ProjectServiceForm = ({
         createdProjectService,
       ]);
       setNewFormProjectService(
-        //töm formulär med min nya projekt service
         createNewProjectServiceWithProjectId(currentProject.id!)
       );
     }

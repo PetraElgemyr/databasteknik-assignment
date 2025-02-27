@@ -60,7 +60,6 @@ export const ProjectPage = () => {
                 onClick={() => {
                   loadProjects();
                   navigate("/");
-                  //delete request med selectedProject.id
                 }}
               >
                 {isEditMode ? "Avbryt redigering" : "Tillbaka till lista"}
@@ -111,7 +110,6 @@ export const ProjectPage = () => {
               size="large"
               onClick={() => {
                 navigate("/");
-                //delete request med selectedProject.id
               }}
             >
               Avbryt

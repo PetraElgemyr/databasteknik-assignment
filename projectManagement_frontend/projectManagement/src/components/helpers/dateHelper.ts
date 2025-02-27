@@ -6,14 +6,3 @@ export const formatDateHelper = (date: Date) => {
   );
   return formattedDate;
 };
-
-// export const formatDateTime = (date: DateTime) => {
-//   console.log(date);
-//   console.log(date.());
-
-//   // const dateformattedDateAsDate = date.toFormat("yyyy-MM-dd");
-//   // const formattedDate = DateTime.fromISO(dateAsDate.toString()).toFormat(
-//   //   "yyyy-MM-dd"
-//   // );
-//   // return formattedDate;
-// };

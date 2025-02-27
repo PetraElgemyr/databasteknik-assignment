@@ -6,7 +6,6 @@ import {
 } from "../interfaces/IProjectWithDetails";
 import { IProjectCreateResponse } from "../interfaces/IProjectCreateResponse";
 import axios from "axios";
-// import { Project } from "../models/Project";
 
 export const getAllProjects = async (): Promise<IListProject[]> => {
   const response = await axios.get("https://localhost:7043/api/projects");
