@@ -106,10 +106,10 @@ export const ProjectServiceForm = ({
         component={"form"}
         width={"100%"}
         onSubmit={handleProjectServiceSubmit}
-        padding={2}
+        paddingTop={4}
       >
         <Stack direction={"row"} spacing={2}>
-          <Stack width={"60%"}>
+          <Stack width={"65%"}>
             <Autocomplete
               fullWidth
               open={openServices}
@@ -117,16 +117,19 @@ export const ProjectServiceForm = ({
               onOpen={handleOpenServices}
               onClose={handleCloseServices}
               value={newFormProjectService.service}
-              getOptionLabel={(s: IService) => s.serviceType}
+              getOptionLabel={(s: IService) =>
+                s.id !== 0 ? `${s.serviceType} - ${s.serviceName}` : "Ej vald"
+              }
               isOptionEqualToValue={(s, value) =>
-                s.serviceType === value.serviceType
+                `${s.serviceType} - ${s.serviceName}` ===
+                `${value.serviceType} - ${value.serviceName}`
               }
               options={allServices}
               renderOption={(props, option, state) => {
                 return (
                   <ListItem {...props} key={state.index}>
                     <ListItemText
-                      primary={option.serviceType}
+                      primary={`${option.serviceType} - ${option.serviceName}`}
                       secondary={`${option.hourlyCost} kr/h`}
                     />
                   </ListItem>
@@ -166,7 +169,7 @@ export const ProjectServiceForm = ({
               )}
             />
           </Stack>
-          <Stack width={"30%"}>
+          <Stack width={"35%"}>
             <TextField
               helperText={
                 isSubmitted &&
