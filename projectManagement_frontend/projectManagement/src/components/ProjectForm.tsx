@@ -1,7 +1,6 @@
 import {
   Autocomplete,
   Box,
-  CircularProgress,
   ListItem,
   ListItemText,
   Stack,
@@ -9,10 +8,13 @@ import {
 } from "@mui/material";
 import Button from "@mui/material/Button";
 import { useAppContext } from "./hooks/useAppContext";
-import { FormEvent, Fragment, useCallback, useEffect, useState } from "react";
+import { FormEvent, useCallback, useEffect, useState } from "react";
 import { defaultCustomer, ICustomer } from "../interfaces/ICustomer";
 import { getAllCustomers } from "../services/customerServices";
-import { IProjectManager } from "../interfaces/IProjectManager";
+import {
+  defaultProjectManager,
+  IProjectManager,
+} from "../interfaces/IProjectManager";
 import { getAllProjectManagers } from "../services/userServices";
 import { getStatusTypes } from "../services/statusTypeServices";
 import { IStatusType } from "../interfaces/IStatusType";
@@ -51,7 +53,8 @@ export const ProjectForm = ({
 
   const [projectManagers, setProjectManagers] = useState<IProjectManager[]>([]);
   const [openManagers, setOpenManagers] = useState(false);
-  const [loadingManagers, setLoadingManagers] = useState(false);
+  const [currentProjectManager, setCurrentProjectManager] =
+    useState<IProjectManager>(defaultProjectManager);
 
   const [statusTypes, setStatusTypes] = useState<IStatusType[]>([]);
   const [choosenStatus, setChoosenStatus] = useState<IStatusType | undefined>(
@@ -75,9 +78,33 @@ export const ProjectForm = ({
     }
   };
 
+  const validateProjectForm = (): boolean => {
+    if (
+      currentProject.customerId === 0 ||
+      currentProject.userId === 0 ||
+      currentProject.statusTypeId === 0 ||
+      currentProject.projectSchedule.startDate === null ||
+      (currentProject.projectSchedule.endDate &&
+        currentProject.projectSchedule.endDate <
+          currentProject.projectSchedule.startDate) ||
+      currentProject.projectName.trim().length === 0 ||
+      currentProject.totalCost === 0 ||
+      currentProject.description === ""
+    ) {
+      return false;
+    }
+
+    return true;
+  };
+
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSubmitted(true);
+    const isValid = validateProjectForm();
+
+    if (!isValid) {
+      return;
+    }
 
     if (isEditMode && fetchedProject.id > 0) {
       updateProjectRequest();
@@ -89,27 +116,6 @@ export const ProjectForm = ({
   const getCustomers = async () => {
     const res = await getAllCustomers();
     return res;
-  };
-
-  const handleOpenCustomers = async () => {
-    setOpenCustomers(true);
-  };
-
-  const handleCloseCustomer = () => {
-    setOpenCustomers(false);
-  };
-
-  const handleOpenManagers = async () => {
-    setOpenManagers(true);
-    setLoadingManagers(true);
-    const res = await getAllProjectManagers();
-    setLoadingManagers(false);
-    setProjectManagers(res);
-  };
-
-  const handleCloseManagers = () => {
-    setOpenManagers(false);
-    // kan tömma om jag vill. onödiga anrop dock, så behåll om d inte ändras så ofta
   };
 
   const fetchStatuses = async () => {
@@ -142,11 +148,15 @@ export const ProjectForm = ({
     }
   };
 
-  const setCurrentCustomerIfProjectFetched = useCallback(async () => {
+  const setCurrentCustomerAndManagerIfProjectFetched = useCallback(async () => {
     const fetchedCustomers = await getCustomers();
+    const fetchedManagers = await getAllProjectManagers();
 
     if (fetchedCustomers) {
       setCustomers(fetchedCustomers);
+    }
+    if (fetchedManagers) {
+      setProjectManagers(fetchedManagers);
     }
 
     if (currentProject.id !== 0 && fetchedProject.id !== 0) {
@@ -154,13 +164,23 @@ export const ProjectForm = ({
         fetchedCustomers.find((c) => c.id === currentProject.customerId) ||
           defaultCustomer
       );
+
+      setCurrentProjectManager(
+        fetchedManagers.find((pm) => pm.id === currentProject.userId) ||
+          defaultProjectManager
+      );
     }
-  }, [currentProject.id, fetchedProject.id, currentProject.customerId]);
+  }, [
+    currentProject.id,
+    fetchedProject.id,
+    currentProject.customerId,
+    currentProject.userId,
+  ]);
 
   useEffect(() => {
     fetchStatuses();
-    setCurrentCustomerIfProjectFetched();
-  }, [setCurrentCustomerIfProjectFetched]);
+    setCurrentCustomerAndManagerIfProjectFetched();
+  }, [setCurrentCustomerAndManagerIfProjectFetched]);
 
   return (
     <>
@@ -204,14 +224,14 @@ export const ProjectForm = ({
             <Autocomplete
               fullWidth
               open={openCustomers}
-              onOpen={handleOpenCustomers}
-              onClose={handleCloseCustomer}
+              onOpen={() => setOpenCustomers(true)}
+              onClose={() => setOpenCustomers(false)}
               value={currentCustomer}
               getOptionLabel={(c: ICustomer) =>
                 c.id !== 0 ? c.customerName : "Ej vald"
               }
               isOptionEqualToValue={(c, value) =>
-                c.customerName === value.customerName
+                c.customerName === value.customerName && c.id === value.id
               }
               options={customers}
               renderOption={(props, option, state) => {
@@ -235,7 +255,16 @@ export const ProjectForm = ({
                 }
               }}
               renderInput={(params) => (
-                <TextField {...params} label={"Kunder"} />
+                <TextField
+                  {...params}
+                  label={"Kunder"}
+                  helperText={
+                    submitted &&
+                    currentProject.userId === 0 &&
+                    "Du måste välja en kund"
+                  }
+                  error={submitted && currentProject.customerId === 0}
+                />
               )}
             />
           </Stack>
@@ -252,6 +281,13 @@ export const ProjectForm = ({
                   shrink: true,
                 },
               }}
+              required
+              error={submitted && currentProject.totalCost === 0}
+              helperText={
+                submitted &&
+                currentProject.totalCost === 0 &&
+                "Fältet får inte lämnas tomt"
+              }
               value={currentProject.totalCost}
               onChange={(e) => {
                 setCurrentProject({
@@ -266,13 +302,16 @@ export const ProjectForm = ({
             <Autocomplete
               fullWidth
               open={openManagers}
-              onOpen={handleOpenManagers}
-              onClose={handleCloseManagers}
-              // value={currentProject.}
-              getOptionLabel={(pm: IProjectManager) => pm.name}
-              isOptionEqualToValue={(pm, value) => pm.name === value.name}
+              onOpen={() => setOpenManagers(true)}
+              onClose={() => setOpenManagers(false)}
+              value={currentProjectManager}
+              getOptionLabel={(pm: IProjectManager) =>
+                pm.id !== 0 ? pm.name : "Ingen vald"
+              }
+              isOptionEqualToValue={(pm, value) =>
+                pm.id === value.id && pm.name === value.name
+              }
               options={projectManagers}
-              loading={loadingManagers}
               renderOption={(props, option, state) => {
                 return (
                   <ListItem {...props} key={state.index}>
@@ -286,6 +325,8 @@ export const ProjectForm = ({
                 value: IProjectManager | null
               ) => {
                 if (event && value) {
+                  setCurrentProjectManager(value);
+
                   setCurrentProject({
                     ...currentProject,
                     userId: value.id,
@@ -295,20 +336,13 @@ export const ProjectForm = ({
               renderInput={(params) => (
                 <TextField
                   {...params}
+                  helperText={
+                    submitted &&
+                    currentProject.userId === 0 &&
+                    "Du måste välja en projektledare"
+                  }
+                  error={submitted && currentProject.userId === 0}
                   label={"Projektledare"}
-                  slotProps={{
-                    input: {
-                      ...params.InputProps,
-                      endAdornment: (
-                        <Fragment>
-                          {loadingManagers ? (
-                            <CircularProgress color="inherit" size={20} />
-                          ) : null}
-                          {params.InputProps.endAdornment}
-                        </Fragment>
-                      ),
-                    },
-                  }}
                 />
               )}
             />
@@ -369,6 +403,25 @@ export const ProjectForm = ({
                   if (newValue)
                     handleStartDateChange(newValue.set("hour", 12), "endDate");
                 }}
+
+                // slotProps={{
+                //   textField: {
+                //     error:
+                //       submitted &&
+                //       currentProject.projectSchedule.endDate &&
+                //       currentProject.projectSchedule.endDate <
+                //         currentProject.projectSchedule.startDate
+                //         ? true
+                //         : false,
+                //     helperText:
+                //       submitted &&
+                //       currentProject.projectSchedule.endDate &&
+                //       currentProject.projectSchedule.endDate <
+                //         currentProject.projectSchedule.startDate
+                //         ? "Slutdatumet kan inte vara tidigare än startdatumet"
+                //         : null,
+                //   },
+                // }}
               />
             </Stack>
           </LocalizationProvider>
