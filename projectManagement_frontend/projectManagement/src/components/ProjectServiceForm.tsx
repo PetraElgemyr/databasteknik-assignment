@@ -73,7 +73,10 @@ export const ProjectServiceForm = ({
     e.preventDefault();
     setIsSubmitted(true);
     const isValid = validateProjectService(newFormProjectService);
-    if (isValid) postProjectService();
+    if (isValid) {
+      postProjectService();
+      setIsSubmitted(false);
+    }
   };
 
   const handleOpenServices = async () => {
