@@ -17,7 +17,7 @@ import {
 } from "../interfaces/IProjectManager";
 import { getAllProjectManagers } from "../services/userServices";
 import { getStatusTypes } from "../services/statusTypeServices";
-import { IStatusType } from "../interfaces/IStatusType";
+import { defaultStatusType, IStatusType } from "../interfaces/IStatusType";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
@@ -57,14 +57,15 @@ export const ProjectForm = ({
     useState<IProjectManager>(defaultProjectManager);
 
   const [statusTypes, setStatusTypes] = useState<IStatusType[]>([]);
-  const [choosenStatus, setChoosenStatus] = useState<IStatusType | undefined>(
-    undefined
-  );
+  const [openStatuses, setOpenStatuses] = useState(false);
+  const [currentStatus, setCurrentStatus] =
+    useState<IStatusType>(defaultStatusType);
 
   const postNewProject = async () => {
     const createdProject = await createNewProject(currentProject);
     if (createdProject) {
       setIsEditMode(false);
+      setSubmitted(false);
       navigate(`/projects/${createdProject.id}`);
     }
   };
@@ -73,6 +74,7 @@ export const ProjectForm = ({
     const updatedProject = await updateExistingProject(currentProject);
 
     if (updatedProject) {
+      setSubmitted(false);
       setIsEditMode(false);
       fetchProjectByParamsId();
     }
@@ -120,7 +122,7 @@ export const ProjectForm = ({
 
   const fetchStatuses = async () => {
     const res = await getStatusTypes();
-    setStatusTypes(res);
+    return res;
   };
 
   const handleStartDateChange = (newValue: Dayjs | null, dateName: string) => {
@@ -148,48 +150,53 @@ export const ProjectForm = ({
     }
   };
 
-  const setCurrentCustomerAndManagerIfProjectFetched = useCallback(async () => {
-    const fetchedCustomers = await getCustomers();
-    const fetchedManagers = await getAllProjectManagers();
+  const setCurrentCustomerStatusesAndManagerIfProjectFetched =
+    useCallback(async () => {
+      const fetchedCustomers = await getCustomers();
+      const fetchedManagers = await getAllProjectManagers();
+      const fetchedStatuses = await fetchStatuses();
 
-    if (fetchedCustomers) {
-      setCustomers(fetchedCustomers);
-    }
-    if (fetchedManagers) {
-      setProjectManagers(fetchedManagers);
-    }
+      if (fetchedCustomers) {
+        setCustomers(fetchedCustomers);
+      }
+      if (fetchedManagers) {
+        setProjectManagers(fetchedManagers);
+      }
+      if (fetchedStatuses) {
+        setStatusTypes(fetchedStatuses);
+      }
 
-    if (currentProject.id !== 0 && fetchedProject.id !== 0) {
-      setCurrentCustomer(
-        fetchedCustomers.find((c) => c.id === currentProject.customerId) ||
-          defaultCustomer
-      );
+      if (currentProject.id !== 0 && fetchedProject.id !== 0) {
+        setCurrentCustomer(
+          fetchedCustomers.find((c) => c.id === currentProject.customerId) ||
+            defaultCustomer
+        );
 
-      setCurrentProjectManager(
-        fetchedManagers.find((pm) => pm.id === currentProject.userId) ||
-          defaultProjectManager
-      );
-    }
-  }, [
-    currentProject.id,
-    fetchedProject.id,
-    currentProject.customerId,
-    currentProject.userId,
-  ]);
+        setCurrentProjectManager(
+          fetchedManagers.find((pm) => pm.id === currentProject.userId) ||
+            defaultProjectManager
+        );
+
+        setCurrentStatus(
+          fetchedStatuses.find((s) => s.id === currentProject.statusTypeId) ||
+            defaultStatusType
+        );
+      }
+    }, [
+      currentProject.id,
+      fetchedProject.id,
+      currentProject.customerId,
+      currentProject.userId,
+      currentProject.statusTypeId,
+    ]);
 
   useEffect(() => {
-    fetchStatuses();
-    setCurrentCustomerAndManagerIfProjectFetched();
-  }, [setCurrentCustomerAndManagerIfProjectFetched]);
+    setCurrentCustomerStatusesAndManagerIfProjectFetched();
+  }, [setCurrentCustomerStatusesAndManagerIfProjectFetched]);
 
   return (
     <>
-      <Box
-        component={"form"}
-        width={"100%"}
-        onSubmit={handleSubmit}
-        padding={2}
-      >
+      <Box component={"form"} width={"70%"} onSubmit={handleSubmit} padding={2}>
         <Stack direction={"row"} spacing={2} width={"100%"} marginBottom={2}>
           <Stack width={"16%"}>
             <TextField
@@ -281,8 +288,10 @@ export const ProjectForm = ({
                   shrink: true,
                 },
               }}
-              required
-              error={submitted && currentProject.totalCost === 0}
+              error={
+                submitted &&
+                (currentProject.totalCost === 0 || !currentProject.totalCost)
+              }
               helperText={
                 submitted &&
                 currentProject.totalCost === 0 &&
@@ -352,11 +361,29 @@ export const ProjectForm = ({
         <Stack direction={"row"} spacing={2} marginBottom={2}>
           <Stack width={"30%"}>
             <Autocomplete
+              open={openStatuses}
+              onOpen={() => setOpenStatuses(true)}
+              onClose={() => setOpenStatuses(false)}
+              value={currentStatus}
               options={statusTypes}
-              getOptionLabel={(option) => option.statusName}
-              value={choosenStatus}
-              isOptionEqualToValue={(option, value) => option.id === value.id}
-              renderInput={(params) => <TextField label="Status" {...params} />}
+              getOptionLabel={(s) =>
+                s.id !== 0 ? s.statusName : "Ingen status vald"
+              }
+              isOptionEqualToValue={(option, value) =>
+                option.id === value.id && option.statusName === value.statusName
+              }
+              renderInput={(params) => (
+                <TextField
+                  label="Status"
+                  {...params}
+                  helperText={
+                    submitted &&
+                    currentProject.statusTypeId === 0 &&
+                    "Du måste välja en status"
+                  }
+                  error={submitted && currentProject.statusTypeId === 0}
+                />
+              )}
               renderOption={(props, option) => (
                 <ListItem {...props} key={option.id}>
                   <ListItemText primary={option.statusName} />
@@ -365,7 +392,7 @@ export const ProjectForm = ({
               disableClearable
               onChange={(event, value) => {
                 if (event && value) {
-                  setChoosenStatus(value);
+                  setCurrentStatus(value);
                   setCurrentProject({
                     ...currentProject,
                     statusTypeId: value.id,
@@ -403,25 +430,23 @@ export const ProjectForm = ({
                   if (newValue)
                     handleStartDateChange(newValue.set("hour", 12), "endDate");
                 }}
+                slotProps={{
+                  textField: {
+                    error:
+                      submitted &&
+                      currentProject.projectSchedule.endDate &&
+                      currentProject.projectSchedule.endDate <
+                        currentProject.projectSchedule.startDate &&
+                      true,
 
-                // slotProps={{
-                //   textField: {
-                //     error:
-                //       submitted &&
-                //       currentProject.projectSchedule.endDate &&
-                //       currentProject.projectSchedule.endDate <
-                //         currentProject.projectSchedule.startDate
-                //         ? true
-                //         : false,
-                //     helperText:
-                //       submitted &&
-                //       currentProject.projectSchedule.endDate &&
-                //       currentProject.projectSchedule.endDate <
-                //         currentProject.projectSchedule.startDate
-                //         ? "Slutdatumet kan inte vara tidigare än startdatumet"
-                //         : null,
-                //   },
-                // }}
+                    helperText:
+                      submitted &&
+                      currentProject.projectSchedule.endDate &&
+                      currentProject.projectSchedule.endDate <
+                        currentProject.projectSchedule.startDate &&
+                      "Slutdatumet kan inte vara tidigare än startdatumet",
+                  },
+                }}
               />
             </Stack>
           </LocalizationProvider>
@@ -438,6 +463,12 @@ export const ProjectForm = ({
             fullWidth
             rows={4}
             label="Beskrivning"
+            error={submitted && currentProject.description.trim().length === 0}
+            helperText={
+              submitted &&
+              currentProject.description.trim().length === 0 &&
+              "Beskrivning fattas"
+            }
             value={currentProject.description}
             onChange={(e) =>
               setCurrentProject({
