@@ -22,20 +22,29 @@ export const ProjectView = ({
   const [services, setServices] = useState<IProjectService[]>([]);
 
   const columns: GridColDef[] = [
-    { field: "projectId", headerName: "Projektnummer", width: 100 },
-    { field: "serviceId", headerName: "Tjänstens ID", width: 100 },
+    { field: "projectId", headerName: "Projektnummer", width: 150 },
+    { field: "serviceId", headerName: "Tjänstenummer", width: 150 },
+
     {
       field: "service.serviceName",
       headerName: "Tjänst",
-      width: 250,
+      width: 220,
       valueGetter: (value, row) => {
-        return row.service.serviceType;
+        return `${row.service.serviceName}`;
+      },
+    },
+    {
+      field: "service.serviceType",
+      headerName: "Typ av tjänst",
+      width: 210,
+      valueGetter: (value, row) => {
+        return `${row.service.serviceType}`;
       },
     },
     {
       field: "service.hourlyCost",
       headerName: "Timpris (sek)",
-      width: 150,
+      width: 180,
       valueGetter: (value, row) => {
         return row.service.hourlyCost;
       },
@@ -43,7 +52,7 @@ export const ProjectView = ({
     {
       field: "estimatedHours",
       headerName: "Beräknade timmar",
-      width: 150,
+      width: 180,
     },
   ];
 
@@ -162,7 +171,7 @@ export const ProjectView = ({
                   fetchServicesForProject();
                 }}
               >
-                Avbryt
+                Tillbaka till projekt
               </Button>
             </>
           )}

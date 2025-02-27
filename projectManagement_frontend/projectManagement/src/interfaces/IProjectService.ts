@@ -1,4 +1,4 @@
-import { IService } from "./IService";
+import { emptyService, IService } from "./IService";
 
 export interface IProjectService {
   estimatedHours: number;
@@ -10,9 +10,5 @@ export interface IProjectService {
 export const emptyProjectService = {
   projectId: 0,
   serviceId: 0,
-  service: {
-    id: 0,
-    serviceType: "",
-    hourlyCost: 0,
-  },
+  service: emptyService,
 };

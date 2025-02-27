@@ -24,7 +24,7 @@ export const HomePage = () => {
           size="large"
           disabled={selectedProject.id === 0}
           onClick={() => {
-            //delete request med selectedProject.id
+            //delete request med selectedProject.id om d behövs.
           }}
         >
           Ta bort projekt
@@ -34,9 +34,7 @@ export const HomePage = () => {
           size="large"
           onClick={() => {
             setCurrentProject(newProject);
-
             navigate("/projects/new");
-            //öppna create Project page med form
           }}
         >
           Skapa projekt
