@@ -75,3 +75,20 @@ export const updateExistingProject = async (
     throw error;
   }
 };
+
+export const deleteProjectById = async (id: number): Promise<boolean> => {
+  try {
+    const response = await fetch(`https://localhost:7043/api/projects/${id}`, {
+      method: "DELETE",
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to delete project. Status: ${response.status}`);
+    }
+
+    return response.ok;
+  } catch (error) {
+    console.error("Error deleting project:", error);
+    return false;
+  }
+};

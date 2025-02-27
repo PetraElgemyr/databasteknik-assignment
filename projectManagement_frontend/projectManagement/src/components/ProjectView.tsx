@@ -74,22 +74,20 @@ export const ProjectView = ({
               <Typography variant="h4" gutterBottom>
                 Projektnummer: {project.id} - {project.projectName}
               </Typography>
-              <Stack spacing={3} direction="row">
-                <Typography variant="h6" gutterBottom>
-                  Startdatum{" "}
-                  {formatDateHelper(project.projectSchedule.startDate)}
-                </Typography>
-                {project.projectSchedule.endDate && (
-                  <Typography variant="h6" gutterBottom>
-                    Slutdatum{" "}
-                    {formatDateHelper(project.projectSchedule.endDate)}
-                  </Typography>
-                )}
-              </Stack>
+              <Typography gutterBottom>
+                {formatDateHelper(project.projectSchedule.startDate)} -{" "}
+                {project.projectSchedule.endDate
+                  ? formatDateHelper(project.projectSchedule.endDate)
+                  : " Slutdatum saknas"}
+              </Typography>
               <Box>
                 <Typography gutterBottom>
-                  Beskrivning {project.description}
+                  Beräknad kostnad: {project.totalCost} SEK
                 </Typography>
+                <Typography variant="h6" gutterBottom>
+                  Beskrivning
+                </Typography>
+                <Typography gutterBottom>{project.description}</Typography>
               </Box>
               <Stack
                 spacing={3}

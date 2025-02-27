@@ -13,7 +13,7 @@ import { Project } from "../../models/Project";
 import { useAppContext } from "../hooks/useAppContext";
 
 export const ProjectPage = () => {
-  const { setCurrentProject } = useAppContext();
+  const { setCurrentProject, loadProjects } = useAppContext();
   const [isEditProjectServicesMode, setIsEditProjectServicesMode] =
     useState(false);
   const navigate = useNavigate();
@@ -58,6 +58,7 @@ export const ProjectPage = () => {
                 variant="outlined"
                 size="large"
                 onClick={() => {
+                  loadProjects();
                   navigate("/");
                   //delete request med selectedProject.id
                 }}

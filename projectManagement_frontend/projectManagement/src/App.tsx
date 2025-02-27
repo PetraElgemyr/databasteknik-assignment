@@ -5,16 +5,9 @@ import { Routing } from "./Routing";
 import { getAllProjects } from "./services/projectServices";
 import { IListProject } from "./interfaces/IListProject";
 import { newProject, Project } from "./models/Project";
-import {
-  emptyIProjectWithDetails,
-  IProjectWithDetails,
-} from "./interfaces/IProjectWithDetails";
 
 function App() {
   const [projects, setProjects] = useState<IListProject[]>([]);
-  const [selectedProject, setSelectedProject] = useState<IProjectWithDetails>(
-    emptyIProjectWithDetails
-  );
   const [currentProject, setCurrentProject] = useState<Project>(newProject);
 
   const loadProjects = async () => {
@@ -29,10 +22,9 @@ function App() {
   const contextValue = {
     projects,
     setProjects,
-    selectedProject,
-    setSelectedProject,
     currentProject,
     setCurrentProject,
+    loadProjects,
   };
 
   return (

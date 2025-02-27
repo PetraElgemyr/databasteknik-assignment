@@ -4,7 +4,13 @@ import { useAppContext } from "./hooks/useAppContext";
 import { formatDateHelper } from "./helpers/dateHelper";
 import { useNavigate } from "react-router-dom";
 
-export const ProjectsDataGrid = () => {
+interface ProjectsDataGridProps {
+  setSelectedProjectId: (id: number | null) => void;
+}
+
+export const ProjectsDataGrid = ({
+  setSelectedProjectId,
+}: ProjectsDataGridProps) => {
   const { projects } = useAppContext();
   const navigate = useNavigate();
 
@@ -51,6 +57,9 @@ export const ProjectsDataGrid = () => {
     <>
       <Box sx={{ height: 400, width: "100%" }}>
         <DataGrid
+          disableMultipleRowSelection
+          checkboxSelection
+          disableRowSelectionOnClick
           rows={projects}
           columns={columns}
           initialState={{
@@ -61,7 +70,11 @@ export const ProjectsDataGrid = () => {
             },
           }}
           pageSizeOptions={[5]}
-          disableRowSelectionOnClick
+          onRowSelectionModelChange={(newSelection) => {
+            const selectedId =
+              newSelection.length > 0 ? Number(newSelection[0]) : null;
+            setSelectedProjectId(selectedId);
+          }}
           onRowClick={(par) => {
             navigate(`/projects/${par.id}`);
           }}

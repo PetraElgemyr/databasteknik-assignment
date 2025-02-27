@@ -5,15 +5,30 @@ import { useAppContext } from "../hooks/useAppContext";
 import { Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { newProject } from "../../models/Project";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { deleteProjectById } from "../../services/projectServices";
 
 export const HomePage = () => {
-  const { selectedProject, setCurrentProject } = useAppContext();
+  const { setCurrentProject, loadProjects } = useAppContext();
   const navigate = useNavigate();
+  const [selectedProjectId, setSelectedProjectId] = useState<number | null>(
+    null
+  );
 
   useEffect(() => {
     setCurrentProject(newProject);
   }, [setCurrentProject]);
+
+  const handleDeleteProject = async () => {
+    if (selectedProjectId) {
+      const response = await deleteProjectById(selectedProjectId);
+
+      if (response) {
+        setSelectedProjectId(null);
+        loadProjects();
+      }
+    }
+  };
 
   return (
     <>
@@ -22,10 +37,9 @@ export const HomePage = () => {
         <Button
           variant="outlined"
           size="large"
-          disabled={selectedProject.id === 0}
-          onClick={() => {
-            //delete request med selectedProject.id om d behövs.
-          }}
+          disabled={selectedProjectId === null}
+          onClick={handleDeleteProject}
+          color="error"
         >
           Ta bort projekt
         </Button>
@@ -40,7 +54,7 @@ export const HomePage = () => {
           Skapa projekt
         </Button>
       </Stack>
-      <ProjectsDataGrid />
+      <ProjectsDataGrid setSelectedProjectId={setSelectedProjectId} />
     </>
   );
 };
