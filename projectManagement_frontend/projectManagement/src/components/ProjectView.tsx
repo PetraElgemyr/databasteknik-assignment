@@ -159,6 +159,7 @@ export const ProjectView = ({
               <Button
                 onClick={() => {
                   setIsEditProjectServicesMode(false);
+                  fetchServicesForProject();
                 }}
               >
                 Avbryt
