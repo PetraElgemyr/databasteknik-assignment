@@ -15,13 +15,16 @@ public class ProjectService(IProjectRepository projectRepository,
     IProjectScheduleRepository projectScheduleRepository,
     ICustomerRepository customerRepository,
     IStatusTypeRepository statusTypeRepository,
-    IUserRepository userRepository) : IProjectService
+    IUserRepository userRepository,
+    IProjectServiceRepository projectServiceRepository
+    ) : IProjectService
 {
     private readonly IProjectRepository _projectRepository = projectRepository;
     private readonly IProjectScheduleRepository _projectScheduleRepository = projectScheduleRepository;
     private readonly ICustomerRepository _customerRepository = customerRepository;
     private readonly IStatusTypeRepository _statusTypeRepository = statusTypeRepository;
     private readonly IUserRepository _userRepository = userRepository;
+    private readonly IProjectServiceRepository _projectServiceRepository = projectServiceRepository;
 
     public async Task<ResponseResult<IEnumerable<ListProject>?>> GetAllProjectsAsync()
     {
@@ -171,19 +174,28 @@ public class ProjectService(IProjectRepository projectRepository,
             if (projectEntityToDelete == null)
                 return ResponseResult.EntityNotFound($"The project with id: {id} could not be found.");
 
+            // ta bort beroende entiteter av projectet innan projekt kan tas bort, sen projektschedule
+            var isProjectServicesDeleted = await _projectServiceRepository.RemoveAllProjectServicesByProjectId(id);
+            if (!isProjectServicesDeleted)
+            {
+                return ResponseResult.Failed("Could not delete project services connected to the project");
+            }
+
             var result = await _projectRepository.RemoveAsync(projectEntityToDelete);
             if (!result)
                 return ResponseResult.Failed("Something went wrong. Could not delete project.");
 
             var scheduleEntityToDelete = await _projectScheduleRepository.GetAsync(s => s.Id == projectEntityToDelete.ProjectScheduleId);
-            if (scheduleEntityToDelete == null)
-                return ResponseResult.Succeeded("Project was successfully removed, but no project schedule was found and could be deleted.");
-            
-            var scheduleResult = await _projectScheduleRepository.RemoveAsync(scheduleEntityToDelete!);
-            if (scheduleResult)
+            if (scheduleEntityToDelete != null)
+            {
+                var scheduleResult = await _projectScheduleRepository.RemoveAsync(scheduleEntityToDelete!);
+                if (!scheduleResult)
+                    return ResponseResult.Failed("Could not delete project schedule connected to the project");
+                
                 return ResponseResult.NoContentSuccess();
+            }
 
-            return ResponseResult.Succeeded("Project was deleted but something went wrong wehen deleting the project schedule.");
+            return ResponseResult.Succeeded("Project was deleted but no project schedule was found and deleted.");
         }
         catch (Exception ex)
         {

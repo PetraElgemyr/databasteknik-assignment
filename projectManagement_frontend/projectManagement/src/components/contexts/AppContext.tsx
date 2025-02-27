@@ -1,7 +1,6 @@
 import { createContext } from "react";
 import { Project } from "../../models/Project";
 import { IListProject } from "../../interfaces/IListProject";
-// import { IProjectWithDetails } from "../../interfaces/IProjectWithDetails";
 
 export type AppState = {
   projects: IListProject[];

@@ -28,6 +28,25 @@ public class ProjectServiceRepository(DataContext context) : BaseRepository<Proj
         }
     }
 
+    public async Task<bool> RemoveAllProjectServicesByProjectId(int projectId)
+    {
+        try
+        {
+            var projectServicesToDelete = await _context.ProjectServices.Where(ps => ps.ProjectId == projectId).ToListAsync();
+            projectServicesToDelete.ForEach(ps => _context.ProjectServices.Remove(ps));
+            var result = await _context.SaveChangesAsync();
+            if (result == 0)
+                return false;
+            return true;
+
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.Message);
+            return false;
+        }
+    }
+
     public async Task<bool> RemoveAsyncByFKKeys(int projectId, int serviceId)
     {
         try
