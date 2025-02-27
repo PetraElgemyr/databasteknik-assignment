@@ -36,7 +36,8 @@ export const ProjectsDataGrid = () => {
       field: "endDate",
       headerName: "Slutdatum",
       width: 150,
-      valueGetter: (value, row) => formatDateHelper(row.endDate),
+      valueGetter: (value, row) =>
+        row.endDate ? formatDateHelper(row.endDate) : "Saknas",
     },
     {
       field: "totalCost",

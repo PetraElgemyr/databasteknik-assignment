@@ -196,9 +196,14 @@ export const ProjectForm = ({
 
   return (
     <>
-      <Box component={"form"} width={"70%"} onSubmit={handleSubmit} padding={2}>
+      <Box
+        component={"form"}
+        width={"100%"}
+        onSubmit={handleSubmit}
+        padding={2}
+      >
         <Stack direction={"row"} spacing={2} width={"100%"} marginBottom={2}>
-          <Stack width={"16%"}>
+          <Stack width={"20%"}>
             <TextField
               fullWidth
               disabled
@@ -206,7 +211,7 @@ export const ProjectForm = ({
               value={currentProject.id}
             />
           </Stack>
-          <Stack width={"42%"}>
+          <Stack width={"80%"}>
             <TextField
               fullWidth
               value={currentProject.projectName}
@@ -227,7 +232,10 @@ export const ProjectForm = ({
               }
             />
           </Stack>
-          <Stack width={"42%"}>
+        </Stack>
+
+        <Stack direction={"row"} spacing={2} width={"100%"} marginBottom={2}>
+          <Stack width={"38%"}>
             <Autocomplete
               fullWidth
               open={openCustomers}
@@ -275,10 +283,8 @@ export const ProjectForm = ({
               )}
             />
           </Stack>
-        </Stack>
 
-        <Stack direction={"row"} spacing={2} width={"100%"} marginBottom={2}>
-          <Stack width={"40%"}>
+          <Stack width={"24%"}>
             <TextField
               fullWidth
               label="Förväntad kostnad"
@@ -307,7 +313,7 @@ export const ProjectForm = ({
             />
           </Stack>
 
-          <Stack width={"60%"}>
+          <Stack width={"38%"}>
             <Autocomplete
               fullWidth
               open={openManagers}
@@ -423,9 +429,11 @@ export const ProjectForm = ({
                 minDate={dayjs(
                   currentProject.projectSchedule.startDate?.toString()
                 )}
-                value={dayjs(
-                  currentProject.projectSchedule.endDate?.toString()
-                )}
+                value={
+                  currentProject.projectSchedule.endDate
+                    ? dayjs(currentProject.projectSchedule.endDate.toString())
+                    : null
+                }
                 onChange={(newValue) => {
                   if (newValue)
                     handleStartDateChange(newValue.set("hour", 12), "endDate");
