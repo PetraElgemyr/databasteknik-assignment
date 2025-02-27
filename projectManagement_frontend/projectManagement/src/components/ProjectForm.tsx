@@ -9,8 +9,8 @@ import {
 } from "@mui/material";
 import Button from "@mui/material/Button";
 import { useAppContext } from "./hooks/useAppContext";
-import { FormEvent, Fragment, useEffect, useState } from "react";
-import { ICustomer } from "../interfaces/ICustomer";
+import { FormEvent, Fragment, useCallback, useEffect, useState } from "react";
+import { defaultCustomer, ICustomer } from "../interfaces/ICustomer";
 import { getAllCustomers } from "../services/customerServices";
 import { IProjectManager } from "../interfaces/IProjectManager";
 import { getAllProjectManagers } from "../services/userServices";
@@ -46,7 +46,8 @@ export const ProjectForm = ({
 
   const [customers, setCustomers] = useState<ICustomer[]>([]);
   const [openCustomers, setOpenCustomers] = useState(false);
-  const [loadingCustomers, setLoadingCustomers] = useState(false);
+  const [currentCustomer, setCurrentCustomer] =
+    useState<ICustomer>(defaultCustomer);
 
   const [projectManagers, setProjectManagers] = useState<IProjectManager[]>([]);
   const [openManagers, setOpenManagers] = useState(false);
@@ -85,17 +86,17 @@ export const ProjectForm = ({
     }
   };
 
+  const getCustomers = async () => {
+    const res = await getAllCustomers();
+    return res;
+  };
+
   const handleOpenCustomers = async () => {
     setOpenCustomers(true);
-    setLoadingCustomers(true);
-    const res = await getAllCustomers();
-    setLoadingCustomers(false);
-    setCustomers(res);
   };
 
   const handleCloseCustomer = () => {
     setOpenCustomers(false);
-    // kan tömma customers om jag vill. onödiga anrop dock,  så behåll om d inte ändras så ofta
   };
 
   const handleOpenManagers = async () => {
@@ -120,7 +121,6 @@ export const ProjectForm = ({
     if (newValue) {
       // const luxonDate = DateTime.fromJSDate(newValue.toDate());
       const newDate = newValue.toDate();
-
       if (dateName === "startDate") {
         setCurrentProject({
           ...currentProject,
@@ -142,9 +142,25 @@ export const ProjectForm = ({
     }
   };
 
+  const setCurrentCustomerIfProjectFetched = useCallback(async () => {
+    const fetchedCustomers = await getCustomers();
+
+    if (fetchedCustomers) {
+      setCustomers(fetchedCustomers);
+    }
+
+    if (currentProject.id !== 0 && fetchedProject.id !== 0) {
+      setCurrentCustomer(
+        fetchedCustomers.find((c) => c.id === currentProject.customerId) ||
+          defaultCustomer
+      );
+    }
+  }, [currentProject.id, fetchedProject.id, currentProject.customerId]);
+
   useEffect(() => {
     fetchStatuses();
-  }, []);
+    setCurrentCustomerIfProjectFetched();
+  }, [setCurrentCustomerIfProjectFetched]);
 
   return (
     <>
@@ -188,10 +204,12 @@ export const ProjectForm = ({
             <Autocomplete
               fullWidth
               open={openCustomers}
-              loading={loadingCustomers}
               onOpen={handleOpenCustomers}
               onClose={handleCloseCustomer}
-              getOptionLabel={(c: ICustomer) => c.customerName}
+              value={currentCustomer}
+              getOptionLabel={(c: ICustomer) =>
+                c.id !== 0 ? c.customerName : "Ej vald"
+              }
               isOptionEqualToValue={(c, value) =>
                 c.customerName === value.customerName
               }
@@ -203,12 +221,13 @@ export const ProjectForm = ({
                   </ListItem>
                 );
               }}
-              disableClearable
               onChange={(
                 event: React.SyntheticEvent<Element, Event>,
                 value: ICustomer | null
               ) => {
                 if (event && value) {
+                  setCurrentCustomer(value);
+
                   setCurrentProject({
                     ...currentProject,
                     customerId: value.id,
@@ -216,23 +235,7 @@ export const ProjectForm = ({
                 }
               }}
               renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label={"Kunder"}
-                  slotProps={{
-                    input: {
-                      ...params.InputProps,
-                      endAdornment: (
-                        <Fragment>
-                          {loadingCustomers ? (
-                            <CircularProgress color="inherit" size={20} />
-                          ) : null}
-                          {params.InputProps.endAdornment}
-                        </Fragment>
-                      ),
-                    },
-                  }}
-                />
+                <TextField {...params} label={"Kunder"} />
               )}
             />
           </Stack>
@@ -265,6 +268,7 @@ export const ProjectForm = ({
               open={openManagers}
               onOpen={handleOpenManagers}
               onClose={handleCloseManagers}
+              // value={currentProject.}
               getOptionLabel={(pm: IProjectManager) => pm.name}
               isOptionEqualToValue={(pm, value) => pm.name === value.name}
               options={projectManagers}
@@ -343,9 +347,13 @@ export const ProjectForm = ({
                 value={dayjs(
                   currentProject.projectSchedule.startDate.toString()
                 )}
-                onChange={(newValue) =>
-                  handleStartDateChange(newValue, "startDate")
-                }
+                onChange={(newValue) => {
+                  if (newValue)
+                    handleStartDateChange(
+                      newValue.set("hour", 12),
+                      "startDate"
+                    );
+                }}
               />
             </Stack>
             <Stack width={"40%"}>
@@ -357,11 +365,12 @@ export const ProjectForm = ({
                 value={dayjs(
                   currentProject.projectSchedule.endDate?.toString()
                 )}
-                onChange={(newValue) =>
-                  handleStartDateChange(newValue, "endDate")
-                }
+                onChange={(newValue) => {
+                  if (newValue)
+                    handleStartDateChange(newValue.set("hour", 12), "endDate");
+                }}
               />
-            </Stack>{" "}
+            </Stack>
           </LocalizationProvider>
         </Stack>
 
