@@ -14,6 +14,8 @@ import { useAppContext } from "../hooks/useAppContext";
 
 export const ProjectPage = () => {
   const { setCurrentProject } = useAppContext();
+  const [isEditProjectServicesMode, setIsEditProjectServicesMode] =
+    useState(false);
   const navigate = useNavigate();
   const { id } = useParams();
   const [fetchedProject, setFetchedProject] = useState<IProjectWithDetails>(
@@ -63,17 +65,19 @@ export const ProjectPage = () => {
                 {isEditMode ? "Avbryt redigering" : "Tillbaka till lista"}
               </Button>
 
-              {fetchedProject.id > 0 && !isEditMode && (
-                <Button
-                  variant="contained"
-                  size="large"
-                  onClick={() => {
-                    setIsEditMode(true);
-                  }}
-                >
-                  Redigera
-                </Button>
-              )}
+              {fetchedProject.id > 0 &&
+                !isEditMode &&
+                !isEditProjectServicesMode && (
+                  <Button
+                    variant="contained"
+                    size="large"
+                    onClick={() => {
+                      setIsEditMode(true);
+                    }}
+                  >
+                    Redigera
+                  </Button>
+                )}
             </Stack>
             {fetchedProject.id === 0 && id ? (
               <Typography variant="h4" gutterBottom>
@@ -87,7 +91,11 @@ export const ProjectPage = () => {
                 fetchedProject={fetchedProject}
               />
             ) : (
-              <ProjectView project={fetchedProject} />
+              <ProjectView
+                isEditProjectServicesMode={isEditProjectServicesMode}
+                setIsEditProjectServicesMode={setIsEditProjectServicesMode}
+                project={fetchedProject}
+              />
             )}
           </Box>
         </>

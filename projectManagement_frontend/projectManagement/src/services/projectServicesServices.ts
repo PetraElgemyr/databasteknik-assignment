@@ -14,3 +14,29 @@ export const getAllProjectServicesByProjectId = async (
 
   return response.data;
 };
+
+export const createNewProjectService = async (
+  projectService: IProjectService
+): Promise<IProjectService> => {
+  try {
+    const response = await fetch(
+      `https://localhost:7043/api/projectservices/`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(projectService),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error creating project service:", error);
+    throw error;
+  }
+};

@@ -1,6 +1,7 @@
 import { IService } from "./IService";
 
 export interface IProjectService {
+  estimatedHours: number;
   projectId: number;
   serviceId: number;
   service: IService;
