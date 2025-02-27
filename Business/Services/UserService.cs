@@ -70,12 +70,10 @@ public class UserService(IUserRepository userRepository, IRoleRepository roleRep
             if (emailExists)
                 return ResponseResult<User?>.AlreadyExists("Email already exists");
 
-            // TODO kolla om funkar
             var result = await _userRepository.AddAsync(entity);
             if (result == null)
                 return ResponseResult<User?>.Error("Something went wrong when creating user.");
 
-            // TODO kolla om id kmr med när skapad user
             var createdUser = UserFactory.CreateUserFromEntity(result);
             return ResponseResult<User?>.Created("User was created successfully!", createdUser);
         }
@@ -95,7 +93,6 @@ public class UserService(IUserRepository userRepository, IRoleRepository roleRep
             var exists = await _userRepository.ExistsAsync(c => c.Id == entity.Id);
             var existingUserWithSameEmail = await _userRepository.ExistsAsync(existingU => existingU.Email == userForm.Email && existingU.Id != userForm.Id );
 
-            // TODO kolla om funkar
             if (existingUserWithSameEmail)
                 return ResponseResult<User?>.AlreadyExists("Email already exists on another user");
             if (!exists)

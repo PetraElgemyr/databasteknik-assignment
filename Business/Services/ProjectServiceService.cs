@@ -36,10 +36,7 @@ public class ProjectServiceService(IProjectServiceRepository projectServiceRepos
         try
         {
             var existingProject = await _projectRepository.GetAsync(p => p.Id == form.ProjectId);
-            //var serviceEntityToAdd = ServiceFactory.CreateServiceEntityFromForm(form.Service);
-            //var addedService = await _serviceRepository.AddAsync(serviceEntityToAdd);
             var foundService = await _serviceRepository.GetAsync(s => s.Id  == form.ServiceId);
-
 
             if (existingProject == null)
                 return ResponseResult<ProjectServiceWithDetails?>.BadRequest($"Invalid project id provided. There is no project with id: {form.ProjectId}");

@@ -11,7 +11,6 @@ namespace Data.Repositories;
 public class CustomerAddressRepository(DataContext context) : BaseRepository<CustomerAddressEntity>(context), ICustomerAddressRepository
 {
 
-    // Hämta en adress INKLUSIVE postalcode/stad och customer kontaktens uppgifter 
     public override async Task<CustomerAddressEntity?> GetAsync(Expression<Func<CustomerAddressEntity, bool>> predicate)
     {
         try

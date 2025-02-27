@@ -65,7 +65,7 @@ public class BaseRepository<TEntity>(DataContext context) : IBaseRepository<TEnt
             _db.Remove(entity);
            var result = await _context.SaveChangesAsync();
 
-            if (result == 0) // TODO kolla det sen
+            if (result == 0) 
             {
                 return false;
             }

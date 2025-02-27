@@ -13,9 +13,6 @@ public class UserRepository(DataContext context) : BaseRepository<UserEntity>(co
     {
         try
         {
-            // För att visa users i en överskådlig lista för admin (get alla users och visa basic info)
-            // Hämta firstname, lastname, customername, role
-            // Klickbar sen och då hämta en user med all info
             var entities = await _context.Users
                 .Include(x => x.Role)
                 .Select(x => new UserEntity
@@ -40,7 +37,6 @@ public class UserRepository(DataContext context) : BaseRepository<UserEntity>(co
     }
 
 
-    // Hämta en users namn och id baserat på roll
     public async Task<IEnumerable<UserEntity>> GetAllByRoleNameAsync(string roleName)
     {
         try
@@ -66,7 +62,6 @@ public class UserRepository(DataContext context) : BaseRepository<UserEntity>(co
 
     }
 
-    // hämtar en user utan phonenumber, baserat på valfri predicate
     public override async Task<UserEntity?> GetAsync(Expression<Func<UserEntity, bool>> predicate)
     {
 

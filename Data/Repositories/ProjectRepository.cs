@@ -9,7 +9,6 @@ namespace Data.Repositories;
 
 public class ProjectRepository(DataContext context) : BaseRepository<ProjectEntity>(context), IProjectRepository
 {
-    // override för att hämta customer & statustyp så att customerNamn o statusnamn visas i listan med alla projekt. endast därför
     public override async Task<IEnumerable<ProjectEntity>> GetAllAsync()
     {
         try
@@ -28,7 +27,6 @@ public class ProjectRepository(DataContext context) : BaseRepository<ProjectEnti
         }
     }
 
-    // override för att hämta customer, status och user (för detaljvy när jag klickat in på proj)
     public override async Task<ProjectEntity?> GetAsync(Expression<Func<ProjectEntity, bool>> expression)
     {
         try

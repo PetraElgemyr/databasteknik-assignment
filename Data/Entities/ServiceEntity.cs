@@ -14,5 +14,4 @@ public class ServiceEntity
 
     [Column(TypeName = "decimal(20, 2)")]
     public decimal HourlyCost { get; set; }
-    //public ICollection<ProjectServiceEntity> ProjectServices { get; set; } = [];
 }
