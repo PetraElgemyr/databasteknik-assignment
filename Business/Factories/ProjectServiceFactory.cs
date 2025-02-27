@@ -11,6 +11,7 @@ public static class ProjectServiceFactory
     {
         return new ProjectServiceWithDetails
         {
+            EstimatedHours = entity.EstimatedHours,
             ProjectId = entity.ProjectId,
             ServiceId = entity.ServiceId,
             Service = new Service
@@ -22,13 +23,13 @@ public static class ProjectServiceFactory
         };
     }
 
-    public static ProjectServiceEntity CreateProjectServiceEntityFromRegForm(ProjectServiceRegistrationForm form, int serviceId)
+    public static ProjectServiceEntity CreateProjectServiceEntityFromRegForm(ProjectServiceRegistrationForm form)
     {
         return new ProjectServiceEntity
         {
             EstimatedHours = form.EstimatedHours,
             ProjectId = form.ProjectId,
-            ServiceId = serviceId
+            ServiceId = form.ServiceId
         };
        
     }

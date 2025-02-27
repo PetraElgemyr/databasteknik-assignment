@@ -3,5 +3,7 @@ public class ProjectServiceRegistrationForm
 {
     public decimal EstimatedHours { get; set; }
     public int ProjectId { get; set; }
+    public int ServiceId { get; set; }
+
     public ServiceRegistration Service { get; set; } = null!;
 }

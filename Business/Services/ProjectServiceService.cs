@@ -36,22 +36,23 @@ public class ProjectServiceService(IProjectServiceRepository projectServiceRepos
         try
         {
             var existingProject = await _projectRepository.GetAsync(p => p.Id == form.ProjectId);
-            var serviceEntityToAdd = ServiceFactory.CreateServiceEntityFromForm(form.Service);
-            var addedService = await _serviceRepository.AddAsync(serviceEntityToAdd);
+            //var serviceEntityToAdd = ServiceFactory.CreateServiceEntityFromForm(form.Service);
+            //var addedService = await _serviceRepository.AddAsync(serviceEntityToAdd);
+            var foundService = await _serviceRepository.GetAsync(s => s.Id  == form.ServiceId);
+
 
             if (existingProject == null)
                 return ResponseResult<ProjectServiceWithDetails?>.BadRequest($"Invalid project id provided. There is no project with id: {form.ProjectId}");
-            if (addedService == null)
-                return ResponseResult<ProjectServiceWithDetails?>.Error("Something went wrong when adding the service!");
+            if (foundService == null)
+                return ResponseResult<ProjectServiceWithDetails?>.BadRequest("Invalid service id provided. No service with that id exists.");
 
-            var projectServiceEntityToAdd = ProjectServiceFactory.CreateProjectServiceEntityFromRegForm(form, addedService.Id);
+            var projectServiceEntityToAdd = ProjectServiceFactory.CreateProjectServiceEntityFromRegForm(form);
             var createdProjectServiceEntity = await _projectServiceRepository.AddAsync(projectServiceEntityToAdd);
             if (createdProjectServiceEntity == null)
             {
-                await _serviceRepository.RemoveAsync(addedService);
                 return ResponseResult<ProjectServiceWithDetails?>.Error("Something went wrong when creating the project service. The service is removed.");
             }
-
+            // kanske måste ha get proj serv här för att få med service
             var addedProjectServiceWithDetails = ProjectServiceFactory.CreateProjectServiceFromEntity(createdProjectServiceEntity);
             return ResponseResult<ProjectServiceWithDetails?>.Created("Project service was successfully created!", addedProjectServiceWithDetails);
         }
