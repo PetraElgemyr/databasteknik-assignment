@@ -13,6 +13,7 @@ public static class ServiceFactory
         {
             Id = entity.Id,
             ServiceType = entity.ServiceTypeName,
+            ServiceName = entity.ServiceName,
             HourlyCost = entity.HourlyCost
         };
     }
@@ -22,6 +23,7 @@ public static class ServiceFactory
         return new ServiceEntity
         {
             ServiceTypeName = form.ServiceType,
+            ServiceName = form.ServiceName,
             HourlyCost = form.HourlyCost
         };
     }
