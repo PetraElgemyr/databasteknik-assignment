@@ -6,7 +6,7 @@ namespace Tests.SeedData;
 public class DataContextSeeder
 {
 
-    public static DataContext GetDataContext()
+    public DataContext GetDataContext()
     {
         var options = new DbContextOptionsBuilder<DataContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())

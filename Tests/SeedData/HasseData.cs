@@ -4,43 +4,9 @@ namespace Tests.SeedData;
 
 public static class HasseData
 {
-    //public static readonly RoleEntity[] RoleEntities = [
-    //    new RoleEntity{Id = 1, RoleName = "Projektledare" },
-    //    new RoleEntity{Id = 2, RoleName = "Utvecklare" },
-    //    new RoleEntity{Id = 3, RoleName = "Designer" },
-    //    new RoleEntity{Id = 4, RoleName = "Utbildare" },
-    //];
 
   
-
-    //public static readonly UserEntity[] UserEntities = [
-    //    new UserEntity{
-    //        Id = 1,
-    //        FirstName = "Herman",
-    //        LastName = "Hermansson",
-    //        Email = "h@domain.com",
-    //        PhoneNumber= "",
-    //        RoleId = RoleEntities[1].Id
-    //    },
-    //    new UserEntity{
-    //        Id = 2,
-    //        FirstName = "Anders",
-    //        LastName = "Andersson",
-    //        Email = "a@domain.com",
-    //        PhoneNumber= "",
-    //        RoleId = RoleEntities[2].Id
-    //    },
-    //    new UserEntity{
-    //        Id = 3,
-    //        FirstName = "Karl",
-    //        LastName = "Karlsson",
-    //        Email = "k@domain.com",
-    //        PhoneNumber= "",
-    //        RoleId = RoleEntities[0].Id
-    //    },
-    //    ];
 }
-//using Data.Entities;
 
 //namespace Tests.SeedData;
 
@@ -98,16 +64,7 @@ public static class HasseData
 //        },
 //    ];
 
-//    public static readonly CustomerEntity[] CustomerEntities = [
-//      new CustomerEntity{ Id = 1, CustomerName = "Arvid Vigren", CustomerTypeId = CustomerTypeEntities![1].Id},
-//      new CustomerEntity{ Id = 2, CustomerName = "EPN Sverige AB", CustomerTypeId = CustomerTypeEntities![0].Id},
-//      new CustomerEntity{ Id = 3, CustomerName = "Nackademin AB", CustomerTypeId = CustomerTypeEntities![0].Id},
-//    ];
 
-//    public static readonly CustomerTypeEntity[] CustomerTypeEntities = [
-//        new CustomerTypeEntity { CustomerType = "Företag" },
-//        new CustomerTypeEntity { CustomerType = "Privatperson" },
-//    ];
 
 
 //    public static readonly PostalCodeEntity[] PostalCodeEntities = [
@@ -168,26 +125,6 @@ public static class HasseData
 //        ];
 
 
-//    public static readonly ProjectEntity[] ProjectEntities = [
-//      new ProjectEntity{
-//            ProjectName = "Projekt 1",
-//            Description = "Beskrivning av projekt 1",
-//            TotalCost = 10000000,
-//            CustomerId = CustomerEntities[0].Id,
-//            StatusTypeId = StatusTypeEntities![0].Id ,
-//            UserId = UserEntities![2].Id
-//        },
-//           new ProjectEntity{
-//            ProjectName = "Projekt 1",
-//            Description = "Beskrivning av projekt 1",
-//            TotalCost = 10000000,
-//            CustomerId = CustomerEntities[1].Id,
-//            StatusTypeId = StatusTypeEntities[1].Id ,
-//            UserId = UserEntities[0].Id
-//        },
-
-//    ];
-
 //    public static readonly ProjectScheduleEntity[] ProjectScheduleEntities = [
 //        new ProjectScheduleEntity{
 //            StartDate = DateTime.Now,
@@ -215,12 +152,6 @@ public static class HasseData
 //        ];
 
 
-//    public static readonly RoleEntity[] RoleEntities = [
-//        new RoleEntity{Id = 1, RoleName = "Projektledare" },
-//        new RoleEntity{Id = 2, RoleName = "Utvecklare" },
-//        new RoleEntity{Id = 3, RoleName = "Designer" },
-//        new RoleEntity{Id = 4, RoleName = "Utbildare" },
-//    ];
 
 
 //    public static readonly ServiceEntity[] ServiceEntities = [
@@ -231,36 +162,3 @@ public static class HasseData
 //        ];
 
 
-//    public static readonly StatusTypeEntity[] StatusTypeEntities = [
-//        new StatusTypeEntity {Id = 1, StatusType = "Ej påbörjad" },
-//        new StatusTypeEntity {Id = 2, StatusType = "Pågående" },
-//        new StatusTypeEntity {Id = 3, StatusType = "Avslutad" },
-//        ];
-
-//    public static readonly UserEntity[] UserEntities = [
-//        new UserEntity{
-//            Id = 1,
-//            FirstName = "Herman",
-//            LastName = "Hermansson",
-//            Email = "h@domain.com",
-//            PhoneNumber= "",
-//            RoleId = RoleEntities[1].Id
-//        },
-//        new UserEntity{
-//            Id = 2,
-//            FirstName = "Anders",
-//            LastName = "Andersson",
-//            Email = "a@domain.com",
-//            PhoneNumber= "",
-//            RoleId = RoleEntities[2].Id
-//        },
-//        new UserEntity{
-//            Id = 3,
-//            FirstName = "Karl",
-//            LastName = "Karlsson",
-//            Email = "k@domain.com",
-//            PhoneNumber= "",
-//            RoleId = RoleEntities[0].Id
-//        },
-//        ];
-//}
