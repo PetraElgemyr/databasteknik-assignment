@@ -10,6 +10,7 @@ export const createNewProjectServiceWithProjectId = (
     service: {
       id: 0,
       serviceType: "",
+      serviceName: "",
       hourlyCost: 0,
     },
   };

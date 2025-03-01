@@ -29,6 +29,8 @@ import {
 import { IProjectWithDetails } from "../interfaces/IProjectWithDetails";
 import { useNavigate } from "react-router-dom";
 import "dayjs/locale/sv";
+import { IService } from "../interfaces/IService";
+import { getAllServices } from "../services/serviceServices";
 dayjs.locale("sv");
 
 interface IProjectFormProps {
@@ -62,6 +64,11 @@ export const ProjectForm = ({
   const [openStatuses, setOpenStatuses] = useState(false);
   const [currentStatus, setCurrentStatus] =
     useState<IStatusType>(defaultStatusType);
+
+  const [services, setServices] = useState<IService[]>([]);
+  const [openServices, setOpenServices] = useState(false);
+  // const [selectedService, setSelectedService] =
+  //   useState<IService>(emptyService);
 
   const postNewProject = async () => {
     const createdProject = await createNewProject(currentProject);
@@ -153,11 +160,22 @@ export const ProjectForm = ({
     }
   };
 
+  const updateProjectIdIfFetchedProjectExists = useCallback(async () => {
+    if (fetchedProject.id > 0) {
+      setCurrentProject((prev) => ({ ...prev, id: fetchedProject.id }));
+    }
+  }, [fetchedProject.id, setCurrentProject]);
+
   const setCurrentCustomerStatusesAndManagerIfProjectFetched =
     useCallback(async () => {
       const fetchedCustomers = await getCustomers();
       const fetchedManagers = await getAllProjectManagers();
       const fetchedStatuses = await fetchStatuses();
+      const fetchedServices = await getAllServices();
+
+      if (fetchedServices) {
+        setServices(fetchedServices);
+      }
 
       if (fetchedCustomers) {
         setCustomers(fetchedCustomers);
@@ -169,7 +187,9 @@ export const ProjectForm = ({
         setStatusTypes(fetchedStatuses);
       }
 
-      if (currentProject.id !== 0 && fetchedProject.id !== 0) {
+      if (fetchedProject.id !== 0) {
+        updateProjectIdIfFetchedProjectExists();
+
         setCurrentCustomer(
           fetchedCustomers.find((c) => c.id === currentProject.customerId) ||
             defaultCustomer
@@ -186,11 +206,11 @@ export const ProjectForm = ({
         );
       }
     }, [
-      currentProject.id,
       fetchedProject.id,
       currentProject.customerId,
       currentProject.userId,
       currentProject.statusTypeId,
+      updateProjectIdIfFetchedProjectExists,
     ]);
 
   useEffect(() => {
@@ -211,7 +231,7 @@ export const ProjectForm = ({
               fullWidth
               disabled
               label={"Projektnummer"}
-              value={currentProject.id}
+              value={fetchedProject.id ? fetchedProject.id : currentProject.id}
             />
           </Stack>
           <Stack width={"80%"}>
@@ -299,11 +319,11 @@ export const ProjectForm = ({
               }}
               error={
                 submitted &&
-                (currentProject.totalCost === 0 || !currentProject.totalCost)
+                (currentProject.totalCost <= 0 || !currentProject.totalCost)
               }
               helperText={
                 submitted &&
-                currentProject.totalCost === 0 &&
+                currentProject.totalCost <= 0 &&
                 "Fältet får inte lämnas tomt"
               }
               value={currentProject.totalCost}
@@ -463,6 +483,103 @@ export const ProjectForm = ({
             </Stack>
           </LocalizationProvider>
         </Stack>
+        {!isEditMode && !currentProject.id && (
+          <Stack width={"100%"} spacing={2} direction={"row"} marginBottom={2}>
+            <Stack width={"65%"}>
+              <Autocomplete
+                fullWidth
+                open={openServices}
+                onClose={() => setOpenServices(false)}
+                onOpen={() => setOpenServices(true)}
+                value={currentProject.projectService.service}
+                getOptionLabel={(s: IService) =>
+                  s.id !== 0 ? `${s.serviceType} - ${s.serviceName}` : "Ej vald"
+                }
+                isOptionEqualToValue={(s, value) =>
+                  `${s.serviceType} - ${s.serviceName}` ===
+                  `${value.serviceType} - ${value.serviceName}`
+                }
+                options={services}
+                renderOption={(props, option, state) => {
+                  return (
+                    <ListItem {...props} key={state.index}>
+                      <ListItemText
+                        primary={`${option.serviceType} - ${option.serviceName}`}
+                        secondary={`${option.hourlyCost} kr/h`}
+                      />
+                    </ListItem>
+                  );
+                }}
+                disableClearable
+                onChange={(
+                  event: React.SyntheticEvent<Element, Event>,
+                  value: IService | null
+                ) => {
+                  if (event && value) {
+                    setCurrentProject({
+                      ...currentProject,
+                      projectService: {
+                        ...currentProject.projectService,
+                        serviceId: value.id,
+                        service: value,
+                      },
+                    });
+                  }
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    error={
+                      submitted &&
+                      !isEditMode &&
+                      !currentProject.id &&
+                      !currentProject.projectService.serviceId
+                    }
+                    helperText={
+                      submitted &&
+                      !isEditMode &&
+                      !currentProject.id &&
+                      !currentProject.projectService.serviceId &&
+                      "Obligatoriskt fält när du skapar ett projekt"
+                    }
+                    {...params}
+                    label={"Välj tjänst"}
+                  />
+                )}
+              />
+            </Stack>
+
+            <Stack width={"35%"}>
+              <TextField
+                helperText={
+                  submitted &&
+                  (!currentProject.projectService.estimatedHours ||
+                    currentProject.projectService.estimatedHours <= 0) &&
+                  !isEditMode
+                    ? "Antalet timmar måste fyllas i"
+                    : ""
+                }
+                error={
+                  submitted &&
+                  (!currentProject.projectService.estimatedHours ||
+                    currentProject.projectService.estimatedHours <= 0) &&
+                  !isEditMode
+                }
+                type="number"
+                label="Antal timmar"
+                value={currentProject.projectService.estimatedHours}
+                onChange={(e) => {
+                  setCurrentProject({
+                    ...currentProject,
+                    projectService: {
+                      ...currentProject.projectService,
+                      estimatedHours: parseInt(e.target.value),
+                    },
+                  });
+                }}
+              />
+            </Stack>
+          </Stack>
+        )}
 
         <Stack
           direction={"row"}

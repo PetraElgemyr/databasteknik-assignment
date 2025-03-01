@@ -7,7 +7,8 @@ export interface IProjectService {
   service: IService;
 }
 
-export const emptyProjectService = {
+export const emptyProjectService: IProjectService = {
+  estimatedHours: 0,
   projectId: 0,
   serviceId: 0,
   service: emptyService,

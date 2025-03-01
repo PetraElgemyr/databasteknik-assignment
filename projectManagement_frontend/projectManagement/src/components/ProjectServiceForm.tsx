@@ -13,7 +13,6 @@ import { Fragment, useState } from "react";
 import { getAllServices } from "../services/serviceServices";
 import { IService } from "../interfaces/IService";
 import { IProjectService } from "../interfaces/IProjectService";
-import { useAppContext } from "./hooks/useAppContext";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { createNewProjectServiceWithProjectId } from "./helpers/projectServiceHelper";
 import { createNewProjectService } from "../services/projectServicesServices";
@@ -21,13 +20,14 @@ import { createNewProjectService } from "../services/projectServicesServices";
 interface IProjectServiceFormProps {
   existingProjectServices: IProjectService[];
   columns: GridColDef[];
+  projectId: number;
 }
 
 export const ProjectServiceForm = ({
   existingProjectServices,
   columns,
+  projectId,
 }: IProjectServiceFormProps) => {
-  const { currentProject } = useAppContext();
   const [openServices, setOpenServices] = useState(false);
   const [loadingServices, setLoadingServices] = useState(false);
   const [allServices, setAllServices] = useState<IService[]>([]);
@@ -35,9 +35,7 @@ export const ProjectServiceForm = ({
     IProjectService[]
   >(existingProjectServices);
   const [newFormProjectService, setNewFormProjectService] =
-    useState<IProjectService>(
-      createNewProjectServiceWithProjectId(currentProject.id!)
-    );
+    useState<IProjectService>(createNewProjectServiceWithProjectId(projectId));
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const postProjectService = async () => {
@@ -50,9 +48,7 @@ export const ProjectServiceForm = ({
         ...projectServicesWithNew,
         createdProjectService,
       ]);
-      setNewFormProjectService(
-        createNewProjectServiceWithProjectId(currentProject.id!)
-      );
+      setNewFormProjectService(createNewProjectServiceWithProjectId(projectId));
     }
   };
 
@@ -73,6 +69,8 @@ export const ProjectServiceForm = ({
     setIsSubmitted(true);
     const isValid = validateProjectService(newFormProjectService);
     if (isValid) {
+      console.log(newFormProjectService);
+
       postProjectService();
       setIsSubmitted(false);
     }

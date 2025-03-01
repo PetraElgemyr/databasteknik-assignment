@@ -87,7 +87,13 @@ export const ProjectView = ({
                 <Typography variant="h6" gutterBottom>
                   Beskrivning
                 </Typography>
-                <Typography gutterBottom>{project.description}</Typography>
+                <Typography
+                  variant="body1"
+                  gutterBottom
+                  sx={{ wordBreak: "break-word" }}
+                >
+                  {project.description}
+                </Typography>
               </Box>
               <Stack
                 spacing={3}
@@ -162,6 +168,7 @@ export const ProjectView = ({
               <ProjectServiceForm
                 columns={columns}
                 existingProjectServices={services}
+                projectId={project.id}
               />
               <Button
                 onClick={() => {
