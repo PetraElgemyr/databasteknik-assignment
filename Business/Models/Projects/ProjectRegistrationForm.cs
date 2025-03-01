@@ -1,4 +1,6 @@
-﻿using Data.Entities;
+﻿using Business.Models.ProjectServices;
+using Business.Services;
+using Data.Entities;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Business.Models.Projects;
@@ -12,4 +14,7 @@ public class ProjectRegistrationForm
     public int StatusTypeId { get; set; }
     public int UserId { get; set; }
     public ProjectSchedule ProjectSchedule { get; set; } = null!;
+    public ProjectServiceRegistrationFromNewProject ProjectService { get; set; } = null!;
 }
+
+

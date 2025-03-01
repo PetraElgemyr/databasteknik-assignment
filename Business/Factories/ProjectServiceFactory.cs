@@ -34,5 +34,27 @@ public static class ProjectServiceFactory
         ProjectId = form.ProjectId,
         ServiceId = form.ServiceId
     };
+
+    public static ProjectServiceEntity? CreateEntityFromNewProjectForm(ProjectServiceRegistrationFromNewProject form, int projectId)
+    {
+        try
+        {
+            ArgumentNullException.ThrowIfNull(form);
+
+            var entity = new ProjectServiceEntity
+            {
+                EstimatedHours = form.EstimatedHours,
+                ProjectId = projectId,
+                ServiceId = form.ServiceId
+            };
+            return entity;
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.Message);
+            return null;
+        }
+    }
+   
 }
 

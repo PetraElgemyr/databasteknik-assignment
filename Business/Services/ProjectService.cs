@@ -16,7 +16,7 @@ public class ProjectService(IProjectRepository projectRepository,
     ICustomerRepository customerRepository,
     IStatusTypeRepository statusTypeRepository,
     IUserRepository userRepository,
-    IProjectServiceRepository projectServiceRepository
+    IProjectServiceRepository projectServiceRepository, IServiceRepository serviceRepository
     ) : IProjectService
 {
     private readonly IProjectRepository _projectRepository = projectRepository;
@@ -25,7 +25,7 @@ public class ProjectService(IProjectRepository projectRepository,
     private readonly IStatusTypeRepository _statusTypeRepository = statusTypeRepository;
     private readonly IUserRepository _userRepository = userRepository;
     private readonly IProjectServiceRepository _projectServiceRepository = projectServiceRepository;
-
+    private readonly IServiceRepository _serviceRepository = serviceRepository;
     public async Task<ResponseResult<IEnumerable<ListProject?>>> GetAllProjectsAsync()
     {
         try
@@ -70,7 +70,7 @@ public class ProjectService(IProjectRepository projectRepository,
 
             var entities = await _projectRepository.GetAllProjectByCustomerIdAsync(customerId);
             var listProjectsForCustomer = entities!.Select(ProjectFactory.CreateListProjectFromEntity);
-          
+
             return ResponseResult<IEnumerable<ListProject?>>.Ok($"All projects for customer with id: {customerId} successfully fetched.", listProjectsForCustomer);
         }
         catch (Exception ex)
@@ -88,7 +88,10 @@ public class ProjectService(IProjectRepository projectRepository,
             var customer = await _customerRepository.GetAsync(c => c.Id == form.CustomerId);
             var statusType = await _statusTypeRepository.GetAsync(s => s.Id == form.StatusTypeId);
             var user = await _userRepository.GetAsync(u => u.Id == form.UserId);
+            var service = await _serviceRepository.GetAsync(s => s.Id == form.ProjectService.ServiceId);
 
+            if (service == null)
+                return ResponseResult<Project?>.BadRequest("No service with that id exists. Could not create project with the provided service");
             if (customer == null)
                 return ResponseResult<Project?>.BadRequest("No customer with that id exists. Could not create project with the provided customer");
             if (statusType == null)
@@ -99,7 +102,7 @@ public class ProjectService(IProjectRepository projectRepository,
             var scheduleEntityToAdd = ProjectScheduleFactory.CreateEntityFromRegistrationForm(form.ProjectSchedule);
             if (scheduleEntityToAdd == null)
                 return ResponseResult<Project?>.Error("Something went wrong when trying to create the schedule entity");
-            
+
             var createdScheduleWithId = await _projectScheduleRepository.AddAsync(scheduleEntityToAdd);
 
             if (createdScheduleWithId == null)
@@ -112,10 +115,25 @@ public class ProjectService(IProjectRepository projectRepository,
 
             if (createdProjectEntityWithId == null)
             {
+                // ta bort skapat schema om projekt failar med att skapa mitt nya proj
                 await _projectScheduleRepository.RemoveAsync(createdScheduleWithId);
                 return ResponseResult<Project?>.Error("Something went wrong when trying to create the project. Removed the created schedule.");
 
             }
+
+            var projectServiceEntityToAdd = ProjectServiceFactory.CreateEntityFromNewProjectForm(form.ProjectService, createdProjectEntityWithId.Id);
+            if (projectServiceEntityToAdd == null)
+                return ResponseResult<Project?>.Error("Something went wrong when trying to create the project service entity");
+            
+            var createdProjectServiceWithId = await _projectServiceRepository.AddAsync(projectServiceEntityToAdd);
+            if (createdProjectServiceWithId == null)
+            {
+                // Ta bort mitt projekt OCH SEN mitt projektschema om det inte funkar att skapa projectservice
+                await _projectRepository.RemoveAsync(createdProjectEntityWithId);
+                await _projectScheduleRepository.RemoveAsync(createdScheduleWithId);
+                return ResponseResult<Project?>.Error("Something went wrong when trying to create the project service. Removed the created project and schedule.");
+            }
+
             var projectResult = ProjectFactory.CreateProjectFromEntity(createdProjectEntityWithId);
             return ResponseResult<Project?>.Created("Project was successfully created!", projectResult);
         }
@@ -145,10 +163,10 @@ public class ProjectService(IProjectRepository projectRepository,
                 return ResponseResult<Project?>.BadRequest("No user with that id exists. Could not update project with invalid user.");
 
             var scheduleEntityToUpdate = ProjectScheduleFactory.CreateEntityFromUpdateFormWithId(updateForm.ProjectSchedule);
-            
+
             if (scheduleEntityToUpdate == null)
                 return ResponseResult<Project?>.Error("Something went wrong when trying create schedule entity");
-            
+
             var updatedScheduleEntity = await _projectScheduleRepository.UpdateAsync(scheduleEntityToUpdate);
 
             if (updatedScheduleEntity == null)
@@ -206,7 +224,7 @@ public class ProjectService(IProjectRepository projectRepository,
                 var scheduleResult = await _projectScheduleRepository.RemoveAsync(scheduleEntityToDelete!);
                 if (!scheduleResult)
                     return ResponseResult.Failed("Could not delete project schedule connected to the project");
-                
+
                 return ResponseResult.NoContentSuccess();
             }
 
