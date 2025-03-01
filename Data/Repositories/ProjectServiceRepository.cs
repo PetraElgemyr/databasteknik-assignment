@@ -33,6 +33,9 @@ public class ProjectServiceRepository(DataContext context) : BaseRepository<Proj
         try
         {
             var projectServicesToDelete = await _context.ProjectServices.Where(ps => ps.ProjectId == projectId).ToListAsync();
+            if (projectServicesToDelete.Count == 0)
+                return true;
+
             projectServicesToDelete.ForEach(ps => _context.ProjectServices.Remove(ps));
             var result = await _context.SaveChangesAsync();
             if (result == 0)
