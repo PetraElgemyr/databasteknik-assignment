@@ -32,7 +32,14 @@ export const HomePage = () => {
 
   return (
     <>
-      <Typography variant="h3">Alla projekt</Typography>
+      <Typography
+        sx={{
+          overflow: "hidden",
+        }}
+        variant="h3"
+      >
+        Alla projekt
+      </Typography>
       <Stack spacing={3} direction="row" justifyContent={"end"}>
         <Button
           variant="outlined"

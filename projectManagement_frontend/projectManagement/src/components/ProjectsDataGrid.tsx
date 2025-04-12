@@ -57,6 +57,11 @@ export const ProjectsDataGrid = ({
     <>
       <Box sx={{ height: 400, width: "100%" }}>
         <DataGrid
+          sx={{
+            "& .MuiDataGrid-columnHeader": {
+              overflow: "hidden",
+            },
+          }}
           disableMultipleRowSelection
           checkboxSelection
           disableRowSelectionOnClick
